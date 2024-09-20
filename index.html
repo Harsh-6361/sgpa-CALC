@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SGPA Quest - Level Up Your Grades!</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #20232a;
+            color: #61dafb;
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #282c34;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+        }
+        h2 {
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 10px;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: none;
+        }
+        th, td {
+            padding: 15px;
+            text-align: center;
+        }
+        th {
+            background-color: #61dafb;
+            color: #20232a;
+            font-weight: bold;
+            border-radius: 10px;
+        }
+        td {
+            background-color: #393e46;
+            border-radius: 10px;
+        }
+        input[type="number"] {
+            width: 80%;
+            padding: 8px;
+            border: 2px solid #61dafb;
+            border-radius: 10px;
+            background-color: #20232a;
+            color: #61dafb;
+            text-align: center;
+            font-size: 16px;
+        }
+        .btn {
+            padding: 12px 30px;
+            background-color: #61dafb;
+            color: #20232a;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 18px;
+            margin: 10px;
+            transition: transform 0.3s, background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #38a1db;
+            transform: scale(1.05);
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 24px;
+        }
+        .result span {
+            color: #f8c445;
+            font-weight: bold;
+        }
+        .message {
+            margin-top: 20px;
+            font-size: 20px;
+            color: #f8c445;
+        }
+        .avatar {
+            display: block;
+            margin: 20px auto;
+            width: 150px;
+            height: 150px;
+            background: url('//harsh.png') no-repeat center center;
+            background-size: cover;
+            border-radius: 50%;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+        footer {
+            background-color: #20232a;
+            padding: 15px;
+            margin-top: 40px;
+            color: #61dafb;
+            border-radius: 15px;
+        }
+        #printBtn {
+            display: none; /* Initially hide the print button */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>🎮 SGPA Calculator! 🎮</h2>
+        <div class="avatar"></div>
+        <table id="gradeTable">
+            <thead>
+                <tr>
+                    <th>📚 Credits (Ci)</th>
+                    <th>✏️ Marks</th>
+                    <th>🏆 Grade Point (Gi)</th>
+                    <th>🛠️ Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><input type="number" placeholder="Credits" required></td>
+                    <td><input type="number" placeholder="Marks" required></td>
+                    <td><input type="number" placeholder="Grade Point" readonly></td>
+                    <td><button class="btn" onclick="removeRow(this)">🗑️ Remove</button></td>
+                </tr>
+            </tbody>
+        </table>
+        <button class="btn" onclick="addRow()">➕ Add Subject</button>
+        <button class="btn" onclick="calculateSGPA()">💯 Calculate SGPA</button>
+        <div class="result" id="result"></div>
+        <div class="message" id="message"></div>
+        <button class="btn" id="printBtn" onclick="printResult()">🖨️ Print Result</button>
+    </div>
+
+    <script>
+        function addRow() {
+            var table = document.getElementById("gradeTable").getElementsByTagName('tbody')[0];
+            var row = table.insertRow(-1);
+            var cell1 = row.insertCell(0);
+            var cell2 = row.insertCell(1);
+            var cell3 = row.insertCell(2);
+            var cell4 = row.insertCell(3);
+            
+            cell1.innerHTML = '<input type="number" placeholder="Credits" required>';
+            cell2.innerHTML = '<input type="number" placeholder="Marks" required>';
+            cell3.innerHTML = '<input type="number" placeholder="Grade Point" readonly>';
+            cell4.innerHTML = '<button class="btn" onclick="removeRow(this)">🗑️ Remove</button>';
+        }
+        function removeRow(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+        function calculateSGPA() {
+            var table = document.getElementById("gradeTable");
+            var totalCi = 0;
+            var totalCiGi = 0;
+            var calculationDetails = "";
+
+            for (var i = 1, row; row = table.rows[i]; i++) {
+                var credits = parseInt(row.cells[0].children[0].value);
+                var marks = parseInt(row.cells[1].children[0].value);
+                var gradePoint = getGradePoint(marks);
+                var ciGi = credits * gradePoint;
+                row.cells[2].children[0].value = gradePoint;
+
+                totalCi += credits;
+                totalCiGi += ciGi;
+
+                calculationDetails += `
+                    <tr>
+                        <td>Subject ${i}</td>
+                        <td>${credits}</td>
+                        <td>${marks}</td>
+                        <td>${gradePoint}</td>
+                        <td>${ciGi}</td>
+                    </tr>
+                `;
+            }
+
+            var sgpa = totalCiGi / totalCi;
+            var percentage = (sgpa - 0.75) * 10;
+
+            document.getElementById("result").innerHTML = "Your SGPA is: <span>" + sgpa.toFixed(2) + "</span><br>That's equivalent to: <span>" + percentage.toFixed(2) + "%</span>";
+
+            // Array of motivational quotes
+            const quotes = {
+                high: [
+                    "Outstanding! Keep up the excellent work!",
+                    "You're on fire! Keep the momentum going!",
+                    "You're a star! Shine bright!",
+                    "Your hard work is paying off big time!",
+                    "Success is in your hands – keep reaching for the stars!"
+                ],
+                mid: [
+                    "Great job! A little more effort will take you even higher!",
+                    "You're doing well – keep pushing forward!",
+                    "You're almost there – don't stop now!",
+                    "Believe in yourself, and you can achieve anything!",
+                    "Success is the sum of small efforts, repeated day in and day out."
+                ],
+                low: [
+                    "Don't give up – every step forward is progress!",
+                    "Keep going – you're stronger than you think!",
+                    "Challenges are just opportunities in disguise.",
+                    "Your potential is limitless – keep striving!",
+                    "Believe in the process, and success will follow."
+                ]
+            };
+
+            // Select a quote based on SGPA
+            let selectedQuote;
+            if (sgpa >= 9) {
+                selectedQuote = quotes.high[Math.floor(Math.random() * quotes.high.length)];
+            } else if (sgpa >= 6) {
+                selectedQuote = quotes.mid[Math.floor(Math.random() * quotes.mid.length)];
+            } else {
+                selectedQuote = quotes.low[Math.floor(Math.random() * quotes.low.length)];
+            }
+
+            document.getElementById("message").innerHTML = selectedQuote;
+
+            // Save details for printing
+            sessionStorage.setItem('calculationDetails', calculationDetails);
+            sessionStorage.setItem('totalCredits', totalCi);
+            sessionStorage.setItem('totalCiGi', totalCiGi);
+            sessionStorage.setItem('sgpa', sgpa.toFixed(2));
+            sessionStorage.setItem('percentage', percentage.toFixed(2));
+            sessionStorage.setItem('message', selectedQuote);
+
+            // Display the print button after calculation
+            document.getElementById("printBtn").style.display = 'block';
+        }
+
+        function getGradePoint(marks) {
+            if (marks >= 90 && marks <= 100) return 10;
+            else if (marks >= 80 && marks <= 89) return 9;
+            else if (marks >= 70 && marks <= 79) return 8;
+            else if (marks >= 60 && marks <= 69) return 7;
+            else if (marks >= 55 && marks <= 59) return 6;
+            else if (marks >= 50 && marks <= 54) return 5;
+            else if (marks >= 40 && marks <= 49) return 4;
+            else return 0;
+        }
+
+        function printResult() {
+            window.open('print.html');
+        }
+    </script>
+
+    <footer>
+        <p>&copy; 2024 SGPA Quest. All Rights Reserved. 🎓</p>
+    </footer>
+</body>
+</html>
