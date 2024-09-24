@@ -3,9 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<marquee width="60%" direction="right" height="100px">
-USE DESKTOP MODE FOR BEST EXPERIENCE
-</marquee>
     <title>SGPA Quest - Level Up Your Grades!</title>
     <style>
         body {
@@ -25,7 +22,7 @@ USE DESKTOP MODE FOR BEST EXPERIENCE
             box-shadow: 0 6px 12px rgba(0,0,0,0.2);
         }
         h2 {
-            font-size: 32px;
+            font-size: 28px;
             margin-bottom: 20px;
         }
         table {
@@ -33,6 +30,7 @@ USE DESKTOP MODE FOR BEST EXPERIENCE
             border-collapse: separate;
             border-spacing: 0 10px;
             margin-bottom: 20px;
+            overflow-x: auto; /* Make table scrollable on smaller screens */
         }
         table, th, td {
             border: none;
@@ -52,23 +50,23 @@ USE DESKTOP MODE FOR BEST EXPERIENCE
             border-radius: 10px;
         }
         input[type="number"] {
-            width: 80%;
+            width: 90%; /* Adjusted to fit better on mobile */
             padding: 8px;
             border: 2px solid #61dafb;
             border-radius: 10px;
             background-color: #20232a;
             color: #61dafb;
             text-align: center;
-            font-size: 16px;
+            font-size: 14px; /* Smaller font for mobile */
         }
         .btn {
-            padding: 12px 30px;
+            padding: 10px 25px;
             background-color: #61dafb;
             color: #20232a;
             border: none;
             border-radius: 50px;
             cursor: pointer;
-            font-size: 18px;
+            font-size: 16px;
             margin: 10px;
             transition: transform 0.3s, background-color 0.3s;
         }
@@ -78,7 +76,7 @@ USE DESKTOP MODE FOR BEST EXPERIENCE
         }
         .result {
             margin-top: 20px;
-            font-size: 24px;
+            font-size: 20px; /* Adjusted for mobile */
         }
         .result span {
             color: #f8c445;
@@ -86,15 +84,15 @@ USE DESKTOP MODE FOR BEST EXPERIENCE
         }
         .message {
             margin-top: 20px;
-            font-size: 20px;
+            font-size: 18px;
             color: #f8c445;
         }
         .avatar {
             display: block;
             margin: 20px auto;
-            width: 150px;
-            height: 150px;
-            background: url('//harsh.png') no-repeat center center;
+            width: 120px; /* Smaller avatar for mobile */
+            height: 120px;
+            background: url('Designer.jpeg') no-repeat center center;
             background-size: cover;
             border-radius: 50%;
             box-shadow: 0 6px 12px rgba(0,0,0,0.3);
@@ -108,6 +106,29 @@ USE DESKTOP MODE FOR BEST EXPERIENCE
         }
         #printBtn {
             display: none; /* Initially hide the print button */
+        }
+
+        /* Media Query for mobile screens */
+        @media only screen and (max-width: 600px) {
+            .container {
+                padding: 20px; /* Reduce padding */
+            }
+            h2 {
+                font-size: 24px; /* Smaller heading */
+            }
+            input[type="number"] {
+                font-size: 14px; /* Smaller font for input fields */
+            }
+            .btn {
+                padding: 8px 20px; /* Smaller buttons */
+                font-size: 14px;
+            }
+            .result {
+                font-size: 18px; /* Smaller result text */
+            }
+            .message {
+                font-size: 16px; /* Adjusted motivational message */
+            }
         }
     </style>
 </head>
@@ -190,32 +211,12 @@ USE DESKTOP MODE FOR BEST EXPERIENCE
 
             document.getElementById("result").innerHTML = "Your SGPA is: <span>" + sgpa.toFixed(2) + "</span><br>That's equivalent to: <span>" + percentage.toFixed(2) + "%</span>";
 
-            // Array of motivational quotes
             const quotes = {
-                high: [
-                    "Outstanding! Keep up the excellent work!",
-                    "You're on fire! Keep the momentum going!",
-                    "You're a star! Shine bright!",
-                    "Your hard work is paying off big time!",
-                    "Success is in your hands – keep reaching for the stars!"
-                ],
-                mid: [
-                    "Great job! A little more effort will take you even higher!",
-                    "You're doing well – keep pushing forward!",
-                    "You're almost there – don't stop now!",
-                    "Believe in yourself, and you can achieve anything!",
-                    "Success is the sum of small efforts, repeated day in and day out."
-                ],
-                low: [
-                    "Don't give up – every step forward is progress!",
-                    "Keep going – you're stronger than you think!",
-                    "Challenges are just opportunities in disguise.",
-                    "Your potential is limitless – keep striving!",
-                    "Believe in the process, and success will follow."
-                ]
+                high: ["Outstanding! Keep up the excellent work!", "You're on fire! Keep the momentum going!"],
+                mid: ["Great job! A little more effort will take you even higher!", "You're doing well – keep pushing forward!"],
+                low: ["Don't give up – every step forward is progress!", "Keep going – you're stronger than you think!"]
             };
 
-            // Select a quote based on SGPA
             let selectedQuote;
             if (sgpa >= 9) {
                 selectedQuote = quotes.high[Math.floor(Math.random() * quotes.high.length)];
@@ -227,7 +228,6 @@ USE DESKTOP MODE FOR BEST EXPERIENCE
 
             document.getElementById("message").innerHTML = selectedQuote;
 
-            // Save details for printing
             sessionStorage.setItem('calculationDetails', calculationDetails);
             sessionStorage.setItem('totalCredits', totalCi);
             sessionStorage.setItem('totalCiGi', totalCiGi);
@@ -235,7 +235,6 @@ USE DESKTOP MODE FOR BEST EXPERIENCE
             sessionStorage.setItem('percentage', percentage.toFixed(2));
             sessionStorage.setItem('message', selectedQuote);
 
-            // Display the print button after calculation
             document.getElementById("printBtn").style.display = 'block';
         }
 
