@@ -288,16 +288,16 @@
             const cgpaDiv = document.getElementById('cgpaDisplay');
             
             if (userData && Object.keys(userData.semesters).length > 0) {
-                // Existing user
-                statusDiv.innerHTML = `✅ Welcome back, ${usn}! Your data has been found.`;
+                // Existing user - use textContent to prevent XSS
+                statusDiv.textContent = `✅ Welcome back, ${usn}! Your data has been found.`;
                 statusDiv.style.backgroundColor = '#2d5016';
                 statusDiv.style.display = 'block';
                 
                 // Display CGPA and semester summary
                 displayCGPA(userData);
             } else {
-                // New user
-                statusDiv.innerHTML = `👋 Welcome ${usn}! You're a new user. Please register your marks for all 8 semesters.`;
+                // New user - use textContent to prevent XSS
+                statusDiv.textContent = `👋 Welcome ${usn}! You're a new user. Please register your marks for all 8 semesters.`;
                 statusDiv.style.backgroundColor = '#5a3e1b';
                 statusDiv.style.display = 'block';
                 cgpaDiv.style.display = 'none';
@@ -319,20 +319,47 @@
                 const table = document.getElementById("gradeTable").getElementsByTagName('tbody')[0];
                 table.innerHTML = '';
                 
-                // Load saved subjects
+                // Load saved subjects - properly escape values
                 semData.subjects.forEach(subject => {
                     const row = table.insertRow(-1);
-                    row.insertCell(0).innerHTML = `<input type="number" placeholder="Credits" value="${subject.credits}" required>`;
-                    row.insertCell(1).innerHTML = `<input type="number" placeholder="Marks" value="${subject.marks}" required>`;
-                    row.insertCell(2).innerHTML = `<input type="number" placeholder="Grade Point" value="${subject.gradePoint}" readonly>`;
+                    const creditsInput = document.createElement('input');
+                    creditsInput.type = 'number';
+                    creditsInput.placeholder = 'Credits';
+                    creditsInput.value = subject.credits;
+                    creditsInput.required = true;
+                    row.insertCell(0).appendChild(creditsInput);
+                    
+                    const marksInput = document.createElement('input');
+                    marksInput.type = 'number';
+                    marksInput.placeholder = 'Marks';
+                    marksInput.value = subject.marks;
+                    marksInput.required = true;
+                    row.insertCell(1).appendChild(marksInput);
+                    
+                    const gradeInput = document.createElement('input');
+                    gradeInput.type = 'number';
+                    gradeInput.placeholder = 'Grade Point';
+                    gradeInput.value = subject.gradePoint;
+                    gradeInput.readOnly = true;
+                    row.insertCell(2).appendChild(gradeInput);
+                    
                     row.insertCell(3).innerHTML = '<button class="btn btn-remove" onclick="removeRow(this)">🗑️ Remove</button>';
                 });
                 
-                // Display SGPA for this semester
-                document.getElementById("result").innerHTML = 
-                    `Saved SGPA for Semester ${semester}: <span>${semData.sgpa}</span><br>` +
-                    `Equivalent to: <span>${semData.percentage}%</span>`;
-                document.getElementById("message").innerHTML = semData.message || '';
+                // Display SGPA for this semester - using textContent for data
+                const resultDiv = document.getElementById("result");
+                resultDiv.innerHTML = '';
+                resultDiv.appendChild(document.createTextNode('Saved SGPA for Semester ' + semester + ': '));
+                const sgpaSpan = document.createElement('span');
+                sgpaSpan.textContent = semData.sgpa;
+                resultDiv.appendChild(sgpaSpan);
+                resultDiv.appendChild(document.createElement('br'));
+                resultDiv.appendChild(document.createTextNode('Equivalent to: '));
+                const percentSpan = document.createElement('span');
+                percentSpan.textContent = semData.percentage + '%';
+                resultDiv.appendChild(percentSpan);
+                
+                document.getElementById("message").textContent = semData.message || '';
             }
         }
         
@@ -387,42 +414,75 @@
                 return;
             }
             
-            // Display list of semesters
-            let listHtml = '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 10px;">';
+            // Display list of semesters - use DOM methods to avoid XSS
+            const listContainer = document.createElement('div');
+            listContainer.style.cssText = 'display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 10px;';
+            
             semesterNumbers.forEach(sem => {
                 const semData = semesters[sem];
-                listHtml += `
-                    <div style="background: #393e46; padding: 10px; border-radius: 8px; text-align: center;">
-                        <div style="font-weight: bold; color: #61dafb;">Sem ${sem}</div>
-                        <div style="font-size: 18px; color: #f8c445;">SGPA: ${semData.sgpa}</div>
-                    </div>
-                `;
+                const semBox = document.createElement('div');
+                semBox.style.cssText = 'background: #393e46; padding: 10px; border-radius: 8px; text-align: center;';
+                
+                const semLabel = document.createElement('div');
+                semLabel.style.cssText = 'font-weight: bold; color: #61dafb;';
+                semLabel.textContent = 'Sem ' + sem;
+                
+                const sgpaLabel = document.createElement('div');
+                sgpaLabel.style.cssText = 'font-size: 18px; color: #f8c445;';
+                sgpaLabel.textContent = 'SGPA: ' + semData.sgpa;
+                
+                semBox.appendChild(semLabel);
+                semBox.appendChild(sgpaLabel);
+                listContainer.appendChild(semBox);
             });
-            listHtml += '</div>';
-            semesterList.innerHTML = listHtml;
             
-            // Calculate CGPA
+            semesterList.innerHTML = '';
+            semesterList.appendChild(listContainer);
+            
+            // Calculate CGPA with division by zero check
             let totalCredits = 0;
             let totalCiGi = 0;
             
             semesterNumbers.forEach(sem => {
                 const semData = semesters[sem];
-                totalCredits += semData.totalCredits;
-                totalCiGi += semData.totalCiGi;
+                totalCredits += semData.totalCredits || 0;
+                totalCiGi += semData.totalCiGi || 0;
             });
+            
+            // Prevent division by zero
+            if (totalCredits === 0) {
+                cgpaValue.textContent = 'No valid credit data available';
+                cgpaDiv.style.display = 'block';
+                return;
+            }
             
             const cgpa = totalCiGi / totalCredits;
             const cgpaPercentage = (cgpa - 0.75) * 10;
             
-            cgpaValue.innerHTML = `
-                <div style="color: #f8c445;">
-                    CGPA (${semesterNumbers.length} semester${semesterNumbers.length > 1 ? 's' : ''}): 
-                    <span style="font-size: 24px;">${cgpa.toFixed(2)}</span>
-                </div>
-                <div style="color: #61dafb; margin-top: 5px;">
-                    Equivalent to: <span style="font-size: 20px;">${cgpaPercentage.toFixed(2)}%</span>
-                </div>
-            `;
+            // Build CGPA display using DOM methods
+            cgpaValue.innerHTML = '';
+            
+            const cgpaLine = document.createElement('div');
+            cgpaLine.style.cssText = 'color: #f8c445;';
+            cgpaLine.appendChild(document.createTextNode(
+                'CGPA (' + semesterNumbers.length + ' semester' + 
+                (semesterNumbers.length > 1 ? 's' : '') + '): '
+            ));
+            const cgpaSpan = document.createElement('span');
+            cgpaSpan.style.fontSize = '24px';
+            cgpaSpan.textContent = cgpa.toFixed(2);
+            cgpaLine.appendChild(cgpaSpan);
+            
+            const percentLine = document.createElement('div');
+            percentLine.style.cssText = 'color: #61dafb; margin-top: 5px;';
+            percentLine.appendChild(document.createTextNode('Equivalent to: '));
+            const percentSpan = document.createElement('span');
+            percentSpan.style.fontSize = '20px';
+            percentSpan.textContent = cgpaPercentage.toFixed(2) + '%';
+            percentLine.appendChild(percentSpan);
+            
+            cgpaValue.appendChild(cgpaLine);
+            cgpaValue.appendChild(percentLine);
             
             cgpaDiv.style.display = 'block';
         }
