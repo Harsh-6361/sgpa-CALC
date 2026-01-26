@@ -269,13 +269,19 @@
         }
         function removeRow(btn) {
             var row = btn.parentNode.parentNode;
-            row.parentNode.removeChild(row);
+            row.remove();
         }
         
         // Function to save data to JSON file (localStorage for browser)
         function saveToJSON(data) {
             // Get existing data or create new array
-            let savedData = JSON.parse(localStorage.getItem('sgpaCalculations') || '[]');
+            let savedData;
+            try {
+                savedData = JSON.parse(localStorage.getItem('sgpaCalculations') || '[]');
+            } catch (e) {
+                console.error('Error parsing saved data:', e);
+                savedData = [];
+            }
             
             // Add timestamp and new data
             data.timestamp = new Date().toISOString();
@@ -292,6 +298,9 @@
             link.href = url;
             link.download = `sgpa_${data.usn}_sem${data.semester}_${Date.now()}.json`;
             
+            // Clean up the URL to prevent memory leaks
+            setTimeout(() => URL.revokeObjectURL(url), 100);
+            
             // Auto-download is optional, but we'll save to localStorage
             // Uncomment the following lines if you want auto-download
             // document.body.appendChild(link);
@@ -304,7 +313,7 @@
         function calculateSGPA() {
             // Validate USN and Semester
             const usn = document.getElementById('usn').value.trim();
-            const semester = document.getElementById('semester').value;
+            const semester = parseInt(document.getElementById('semester').value);
             
             if (!usn) {
                 alert('⚠️ Please enter your USN');
@@ -330,6 +339,16 @@
                 
                 if (isNaN(credits) || isNaN(marks)) {
                     alert('⚠️ Please fill in all credits and marks');
+                    return;
+                }
+                
+                if (credits <= 0) {
+                    alert('⚠️ Credits must be greater than zero');
+                    return;
+                }
+                
+                if (marks < 0 || marks > 100) {
+                    alert('⚠️ Marks must be between 0 and 100');
                     return;
                 }
                 
@@ -385,7 +404,7 @@
             // Save all data to JSON
             const calculationData = {
                 usn: usn,
-                semester: parseInt(semester),
+                semester: semester,
                 subjects: subjects,
                 totalCredits: totalCi,
                 totalCiGi: totalCiGi,
