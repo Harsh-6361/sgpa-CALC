@@ -76,6 +76,22 @@
             border-radius: 10px;
             color: #2c3e50;
         }
+        .user-info-display {
+            background-color: #f0f4f8;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .user-info-display p {
+            margin: 8px 0;
+            font-size: 16px;
+        }
+        .user-info-display strong {
+            color: #2c3e50;
+            min-width: 100px;
+            display: inline-block;
+        }
         .btn, .theme-toggle {
             display: inline-block;
             margin: 20px auto;
@@ -128,6 +144,12 @@
             background-color: rgba(0, 212, 255, 0.2);
             color: #ffffff;
         }
+        .dark-theme .user-info-display {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .dark-theme .user-info-display strong {
+            color: #00d4ff;
+        }
 
         /* Print styles */
         @media print {
@@ -153,6 +175,12 @@
     <div class="container">
         <h2>SGPA Quest: Detailed Report</h2>
 
+        <!-- User Info Display -->
+        <div class="user-info-display">
+            <p><strong>USN:</strong> <span id="displayUSN"></span></p>
+            <p><strong>Semester:</strong> <span id="displaySemester"></span></p>
+        </div>
+
         <button class="theme-toggle" onclick="toggleTheme()">Switch to Dark Theme</button>
 
         <div class="calculation" id="calculationDetails">
@@ -175,6 +203,14 @@
 
     <script>
         function displayResult() {
+            // Load user info
+            let usn = sessionStorage.getItem('usn');
+            let semester = sessionStorage.getItem('semester');
+            
+            // Display user info
+            document.getElementById("displayUSN").textContent = usn || 'N/A';
+            document.getElementById("displaySemester").textContent = semester || 'N/A';
+            
             // Load calculation details
             let calculationDetails = sessionStorage.getItem('calculationDetails');
             let totalCredits = sessionStorage.getItem('totalCredits');
