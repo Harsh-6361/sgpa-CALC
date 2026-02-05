@@ -542,7 +542,7 @@
             }
             
             const cgpa = totalCiGi / totalCredits;
-            // Fixed percentage formula: Percentage = (CGPA - 0.5) * 10
+            // VTU official formula for CGPA to Percentage conversion: Percentage = (CGPA - 0.5) * 10
             const cgpaPercentage = (cgpa - 0.5) * 10;
             
             container.innerHTML = `
@@ -656,6 +656,13 @@
             }
             
             var table = document.getElementById("gradeTable");
+            
+            // Check if any subjects are entered before processing
+            if (table.rows.length <= 1) {
+                alert('⚠️ Please add at least one subject');
+                return;
+            }
+            
             var totalCi = 0;
             var totalCiGi = 0;
             var calculationDetails = "";
@@ -707,13 +714,8 @@
                 `;
             }
 
-            if (totalCi === 0) {
-                alert('⚠️ Please add at least one subject');
-                return;
-            }
-
             var sgpa = totalCiGi / totalCi;
-            // Fixed percentage formula: Percentage = (SGPA - 0.5) * 10
+            // VTU official formula for SGPA to Percentage conversion: Percentage = (SGPA - 0.5) * 10
             var percentage = (sgpa - 0.5) * 10;
 
             document.getElementById("result").innerHTML = "Your SGPA is: <span>" + sgpa.toFixed(2) + "</span><br>That's equivalent to: <span>" + percentage.toFixed(2) + "%</span>";
@@ -835,7 +837,9 @@
         function loadFromLocalStorage() {
             // This function ensures backward compatibility
             // Data is automatically available from localStorage
-            console.log('App initialized. Data loaded from localStorage.');
+            const allUsers = getAllUsers();
+            const userCount = Object.keys(allUsers).length;
+            console.log(`App initialized. Loaded ${userCount} user(s) from localStorage.`);
         }
         
         // ========== JSON File Import/Export Functions ==========
@@ -854,7 +858,7 @@
             
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'sgpa_data_' + new Date().toISOString().split('T')[0] + '.json';
+            a.download = `sgpa_data_${new Date().toISOString().split('T')[0]}.json`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
