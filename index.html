@@ -864,7 +864,8 @@
                 document.getElementById("message").textContent = '';
                 document.getElementById("printBtn").style.display = 'none';
                 
-                // Auto-focus on the first credits input
+                // Auto-focus on the first credits input after a short delay
+                // to allow the DOM to finish rendering the new row
                 setTimeout(() => {
                     const firstCreditsInput = table.querySelector('input[placeholder="Credits"]');
                     if (firstCreditsInput) {
@@ -995,7 +996,7 @@
                     row.classList.remove('active-input-row');
                 }
             }
-        })
+        });
         
         // ========== SGPA Calculation Functions ==========
         
