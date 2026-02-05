@@ -103,6 +103,29 @@
             color: #61dafb;
             text-align: center;
             font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        td input[type="number"]:focus {
+            outline: none;
+            border-color: #f8c445;
+            box-shadow: 0 0 0 4px rgba(248, 196, 69, 0.3);
+            background-color: #2d3139;
+            transform: scale(1.02);
+        }
+        td input[type="number"]::placeholder {
+            color: #888;
+        }
+        .active-input-row {
+            background-color: rgba(97, 218, 251, 0.1) !important;
+        }
+        .active-input-row td {
+            background-color: rgba(97, 218, 251, 0.15) !important;
+        }
+        .row-number {
+            font-weight: bold;
+            color: #f8c445;
+            font-size: 16px;
+            min-width: 40px;
         }
         .btn {
             padding: 12px 28px;
@@ -454,12 +477,14 @@
                     <h3 style="color: #f8c445; margin: 0;">📝 Semester <span id="currentSemester"></span></h3>
                     <button class="btn btn-secondary" style="padding: 8px 16px; font-size: 14px;" onclick="goBackToDashboard()">← Back to Dashboard</button>
                 </div>
+                <p style="color: #888; margin: 15px 0 0 0; font-size: 14px;">💡 <strong>Tip:</strong> Press <kbd style="background: #61dafb; color: #20232a; padding: 2px 6px; border-radius: 4px;">Enter</kbd> after entering credits to jump to marks, then <kbd style="background: #61dafb; color: #20232a; padding: 2px 6px; border-radius: 4px;">Enter</kbd> again to add a new subject!</p>
             </div>
         
             <div class="table-wrapper">
             <table id="gradeTable">
                 <thead>
                     <tr>
+                        <th>#</th>
                         <th>📚 Credits (Ci)</th>
                         <th>✏️ Marks</th>
                         <th>🏆 Grade Point (Gi)</th>
@@ -468,8 +493,9 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td><input type="number" placeholder="Credits" required></td>
-                        <td><input type="number" placeholder="Marks" required></td>
+                        <td class="row-number">1</td>
+                        <td><input type="number" placeholder="Credits" required onkeydown="handleEnterKey(event, this, 'credits')"></td>
+                        <td><input type="number" placeholder="Marks" required onkeydown="handleEnterKey(event, this, 'marks')"></td>
                         <td><input type="number" placeholder="Grade Point" readonly></td>
                         <td><button class="btn btn-remove" onclick="removeRow(this)">🗑️ Remove</button></td>
                     </tr>
@@ -807,11 +833,12 @@
                 const semData = userData.semesters[semNum];
                 
                 // Load saved subjects
-                semData.subjects.forEach(subject => {
+                semData.subjects.forEach((subject, index) => {
                     const row = table.insertRow(-1);
                     row.innerHTML = `
-                        <td><input type="number" placeholder="Credits" value="${subject.credits}" required></td>
-                        <td><input type="number" placeholder="Marks" value="${subject.marks}" required></td>
+                        <td class="row-number">${index + 1}</td>
+                        <td><input type="number" placeholder="Credits" value="${subject.credits}" required onkeydown="handleEnterKey(event, this, 'credits')"></td>
+                        <td><input type="number" placeholder="Marks" value="${subject.marks}" required onkeydown="handleEnterKey(event, this, 'marks')"></td>
                         <td><input type="number" placeholder="Grade Point" value="${subject.gradePoint}" readonly></td>
                         <td><button class="btn btn-remove" onclick="removeRow(this)">🗑️ Remove</button></td>
                     `;
@@ -827,14 +854,24 @@
                 // Add empty row for new semester
                 const row = table.insertRow(-1);
                 row.innerHTML = `
-                    <td><input type="number" placeholder="Credits" required></td>
-                    <td><input type="number" placeholder="Marks" required></td>
+                    <td class="row-number">1</td>
+                    <td><input type="number" placeholder="Credits" required onkeydown="handleEnterKey(event, this, 'credits')"></td>
+                    <td><input type="number" placeholder="Marks" required onkeydown="handleEnterKey(event, this, 'marks')"></td>
                     <td><input type="number" placeholder="Grade Point" readonly></td>
                     <td><button class="btn btn-remove" onclick="removeRow(this)">🗑️ Remove</button></td>
                 `;
                 document.getElementById("result").innerHTML = '';
                 document.getElementById("message").textContent = '';
                 document.getElementById("printBtn").style.display = 'none';
+                
+                // Auto-focus on the first credits input after a short delay
+                // to allow the DOM to finish rendering the new row
+                setTimeout(() => {
+                    const firstCreditsInput = table.querySelector('input[placeholder="Credits"]');
+                    if (firstCreditsInput) {
+                        firstCreditsInput.focus();
+                    }
+                }, 100);
             }
         }
         
@@ -857,24 +894,109 @@
         
         // ========== Table Functions ==========
         
-        function addRow() {
+        function addRow(focusCredits = false) {
             var table = document.getElementById("gradeTable").getElementsByTagName('tbody')[0];
+            var rowNum = table.rows.length + 1;
             var row = table.insertRow(-1);
-            var cell1 = row.insertCell(0);
-            var cell2 = row.insertCell(1);
-            var cell3 = row.insertCell(2);
-            var cell4 = row.insertCell(3);
+            var cell0 = row.insertCell(0);
+            var cell1 = row.insertCell(1);
+            var cell2 = row.insertCell(2);
+            var cell3 = row.insertCell(3);
+            var cell4 = row.insertCell(4);
             
-            cell1.innerHTML = '<input type="number" placeholder="Credits" required>';
-            cell2.innerHTML = '<input type="number" placeholder="Marks" required>';
+            cell0.className = 'row-number';
+            cell0.innerHTML = rowNum;
+            cell1.innerHTML = '<input type="number" placeholder="Credits" required onkeydown="handleEnterKey(event, this, \'credits\')">';
+            cell2.innerHTML = '<input type="number" placeholder="Marks" required onkeydown="handleEnterKey(event, this, \'marks\')">';
             cell3.innerHTML = '<input type="number" placeholder="Grade Point" readonly>';
             cell4.innerHTML = '<button class="btn btn-remove" onclick="removeRow(this)">🗑️ Remove</button>';
+            
+            // Focus on credits input if requested
+            if (focusCredits) {
+                var creditsInput = cell1.querySelector('input');
+                if (creditsInput) {
+                    creditsInput.focus();
+                }
+            }
+            
+            updateRowNumbers();
         }
         
         function removeRow(btn) {
             var row = btn.parentNode.parentNode;
             row.remove();
+            updateRowNumbers();
         }
+        
+        function updateRowNumbers() {
+            var table = document.getElementById("gradeTable").getElementsByTagName('tbody')[0];
+            var rows = table.rows;
+            for (var i = 0; i < rows.length; i++) {
+                var rowNumCell = rows[i].cells[0];
+                if (rowNumCell && rowNumCell.className === 'row-number') {
+                    rowNumCell.innerHTML = i + 1;
+                }
+            }
+        }
+        
+        function handleEnterKey(event, inputElement, inputType) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                
+                var row = inputElement.parentNode.parentNode;
+                var table = document.getElementById("gradeTable").getElementsByTagName('tbody')[0];
+                
+                if (inputType === 'credits') {
+                    // Move to marks input in the same row
+                    var marksInput = row.cells[2].querySelector('input');
+                    if (marksInput) {
+                        marksInput.focus();
+                    }
+                } else if (inputType === 'marks') {
+                    // Calculate grade point for current row first
+                    var marks = parseInt(inputElement.value);
+                    if (!isNaN(marks) && marks >= 0 && marks <= 100) {
+                        var gradePoint = getGradePoint(marks);
+                        row.cells[3].querySelector('input').value = gradePoint;
+                    }
+                    
+                    // Check if this is the last row
+                    var rowIndex = Array.from(table.rows).indexOf(row);
+                    if (rowIndex === table.rows.length - 1) {
+                        // Last row - add new row and focus on credits
+                        addRow(true);
+                    } else {
+                        // Not last row - focus on credits of next row
+                        var nextRow = table.rows[rowIndex + 1];
+                        if (nextRow) {
+                            var nextCreditsInput = nextRow.cells[1].querySelector('input');
+                            if (nextCreditsInput) {
+                                nextCreditsInput.focus();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Add focus and blur handlers for row highlighting
+        document.addEventListener('focusin', function(e) {
+            if (e.target.tagName === 'INPUT' && e.target.closest('#gradeTable tbody')) {
+                var row = e.target.closest('tr');
+                if (row) {
+                    row.classList.add('active-input-row');
+                }
+            }
+        });
+        
+        document.addEventListener('focusout', function(e) {
+            if (e.target.tagName === 'INPUT' && e.target.closest('#gradeTable tbody')) {
+                var row = e.target.closest('tr');
+                if (row) {
+                    row.classList.remove('active-input-row');
+                }
+            }
+        });
         
         // ========== SGPA Calculation Functions ==========
         
@@ -903,8 +1025,8 @@
             var subjects = [];
 
             for (var i = 1, row; row = table.rows[i]; i++) {
-                var credits = parseInt(row.cells[0].children[0].value);
-                var marks = parseInt(row.cells[1].children[0].value);
+                var credits = parseInt(row.cells[1].children[0].value);
+                var marks = parseInt(row.cells[2].children[0].value);
                 
                 if (isNaN(credits) || isNaN(marks)) {
                     alert('⚠️ Please fill in all credits and marks');
@@ -923,7 +1045,7 @@
                 
                 var gradePoint = getGradePoint(marks);
                 var ciGi = credits * gradePoint;
-                row.cells[2].children[0].value = gradePoint;
+                row.cells[3].children[0].value = gradePoint;
 
                 totalCi += credits;
                 totalCiGi += ciGi;
