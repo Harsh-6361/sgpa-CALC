@@ -262,6 +262,105 @@
             display: none;
         }
 
+        /* About SGPA Section Styles */
+        .about-sgpa {
+            margin-top: 20px;
+            background: #2d3139;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .accordion-toggle {
+            width: 100%;
+            padding: 15px 20px;
+            background: linear-gradient(145deg, #393e46, #2d3139);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #61dafb;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        .accordion-toggle:hover {
+            background: linear-gradient(145deg, #4a5568, #393e46);
+        }
+        .accordion-icon {
+            transition: transform 0.3s;
+        }
+        .accordion-icon.rotated {
+            transform: rotate(180deg);
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out;
+            padding: 0 20px;
+        }
+        .accordion-content.open {
+            max-height: 2000px;
+            padding: 20px;
+        }
+        .info-section {
+            margin-bottom: 25px;
+            text-align: left;
+        }
+        .info-section h4 {
+            color: #f8c445;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        .info-section ul, .info-section ol {
+            padding-left: 20px;
+            line-height: 1.8;
+        }
+        .info-section li {
+            margin-bottom: 10px;
+            color: #e0e0e0;
+        }
+        .info-section p {
+            color: #e0e0e0;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+        .grade-table, .example-table {
+            width: 100%;
+            border-spacing: 0;
+            margin-top: 10px;
+        }
+        .grade-table th, .grade-table td,
+        .example-table th, .example-table td {
+            padding: 10px 8px;
+            font-size: 13px;
+            text-align: center;
+        }
+        .grade-table th, .example-table th {
+            background-color: #61dafb;
+            color: #20232a;
+        }
+        .grade-table td, .example-table td {
+            background-color: #393e46;
+            color: #e0e0e0;
+        }
+        .total-row td {
+            background-color: #4a5568 !important;
+            color: #f8c445 !important;
+        }
+        .calculation-result {
+            background: linear-gradient(145deg, #5a3e1b, #3d2a12);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 15px;
+            border: 2px solid #f8c445;
+        }
+        .calculation-result p {
+            color: #f8c445;
+            margin: 5px 0;
+            font-size: 16px;
+        }
+
         /* Mobile-first responsive design */
         @media only screen and (min-width: 600px) {
             body {
@@ -391,6 +490,141 @@
             <button class="btn btn-secondary" onclick="exportToJSON()">📥 Export Data</button>
             <button class="btn btn-secondary" onclick="document.getElementById('fileInput').click()">📤 Import Data</button>
             <input type="file" id="fileInput" accept=".json" onchange="importFromJSON(event)">
+        </div>
+
+        <!-- About SGPA Section -->
+        <div class="about-sgpa" id="aboutSGPA">
+            <button class="accordion-toggle" onclick="toggleAboutSection()">
+                <span>📚 Learn About SGPA</span>
+                <span class="accordion-icon" id="accordionIcon">▼</span>
+            </button>
+            <div class="accordion-content" id="accordionContent">
+                <div class="info-section">
+                    <h4>🎯 Why do we need SGPA in our life?</h4>
+                    <ul>
+                        <li><strong>Result Analytics:</strong> When your result comes out, SGPA gives you a unique way to explain your performance to parents and others, instead of explaining every subject's marks.</li>
+                        <li><strong>Credit-Based System:</strong> VTU subjects have different credits - more credits means more grade points. SGPA accounts for this weighted importance.</li>
+                        <li><strong>Scholarships & Entrance:</strong> Many scholarship programs and entrance forms rely on student's SGPA/CGPA as a key constraint.</li>
+                        <li><strong>Placements:</strong> Companies coming for campus placements show higher interest in students with better CGPA, as they believe higher CGPA indicates higher determination.</li>
+                        <li><strong>Temporary Grade Card:</strong> We provide a temporary grade card containing your SGPA with proof for your personal use.</li>
+                    </ul>
+                </div>
+
+                <div class="info-section">
+                    <h4>📖 Why do we need to calculate SGPA?</h4>
+                    <p>VTU follows the <strong>CBCS (Choice Based Credit System)</strong> scheme, which measures student's performance as grade points rather than marks.</p>
+                    <p>However, VTU doesn't provide a proper grade report for students to measure their overall academic performance easily.</p>
+                    <p>Our VTU SGPA Calculator follows the steps given in the <strong>official VTU documentation (Annexure 3 of regulations)</strong> to calculate your SGPA and CGPA accurately.</p>
+                </div>
+
+                <div class="info-section">
+                    <h4>📝 How to Calculate SGPA?</h4>
+                    <ol>
+                        <li>Get your result from the official VTU website.</li>
+                        <li>Convert marks of subjects into grades using the table below.</li>
+                        <li>Calculate the total credits of all subjects.</li>
+                        <li>Multiply each subject's grade points with its credit points.</li>
+                        <li>Divide the total sum of multiplied grade points by total credits.</li>
+                        <li>Or simply use our SGPA Calculator above! 🎮</li>
+                    </ol>
+                </div>
+
+                <div class="info-section">
+                    <h4>📊 Grade Point Table</h4>
+                    <div class="table-wrapper">
+                        <table class="grade-table">
+                            <thead>
+                                <tr>
+                                    <th>Letter Grade</th>
+                                    <th>O</th>
+                                    <th>A+</th>
+                                    <th>A</th>
+                                    <th>B+</th>
+                                    <th>B</th>
+                                    <th>C</th>
+                                    <th>P</th>
+                                    <th>F</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Description</strong></td>
+                                    <td>Outstanding</td>
+                                    <td>Excellent</td>
+                                    <td>Very Good</td>
+                                    <td>Good</td>
+                                    <td>Above Avg</td>
+                                    <td>Average</td>
+                                    <td>Pass</td>
+                                    <td>Fail</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Grade Point</strong></td>
+                                    <td>10</td>
+                                    <td>9</td>
+                                    <td>8</td>
+                                    <td>7</td>
+                                    <td>6</td>
+                                    <td>5</td>
+                                    <td>4</td>
+                                    <td>0</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>% of Marks</strong></td>
+                                    <td>90-100</td>
+                                    <td>80-89</td>
+                                    <td>70-79</td>
+                                    <td>60-69</td>
+                                    <td>55-59</td>
+                                    <td>50-54</td>
+                                    <td>40-49</td>
+                                    <td>0-39</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <h4>📋 Example Calculation</h4>
+                    <p>Here's an example of how SGPA is calculated for one semester:</p>
+                    <div class="table-wrapper">
+                        <table class="example-table">
+                            <thead>
+                                <tr>
+                                    <th>Course</th>
+                                    <th>Credits</th>
+                                    <th>Grade</th>
+                                    <th>Grade Point</th>
+                                    <th>Credit Points (Ci × Gi)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>XX11</td><td>3</td><td>A</td><td>8</td><td>3 × 8 = 24</td></tr>
+                                <tr><td>XX12</td><td>3</td><td>F (Absent)</td><td>0</td><td>3 × 0 = 0</td></tr>
+                                <tr><td>XX13</td><td>3</td><td>A+</td><td>9</td><td>3 × 9 = 27</td></tr>
+                                <tr><td>XX14</td><td>3</td><td>F</td><td>0</td><td>3 × 0 = 0</td></tr>
+                                <tr><td>XX15</td><td>3</td><td>B</td><td>6</td><td>3 × 6 = 18</td></tr>
+                                <tr><td>XX16</td><td>1</td><td>C</td><td>5</td><td>1 × 5 = 5</td></tr>
+                                <tr><td>XX17</td><td>1</td><td>A+</td><td>9</td><td>1 × 9 = 9</td></tr>
+                                <tr><td>XX18</td><td>2</td><td>B</td><td>6</td><td>2 × 6 = 12</td></tr>
+                                <tr><td>XX19</td><td>1</td><td>B</td><td>6</td><td>1 × 6 = 6</td></tr>
+                                <tr class="total-row">
+                                    <td><strong>Total</strong></td>
+                                    <td><strong>20</strong></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td><strong>101</strong></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="calculation-result">
+                        <p><strong>SGPA = Total Credit Points ÷ Total Credits</strong></p>
+                        <p><strong>SGPA = 101 ÷ 20 = 5.05</strong></p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -904,6 +1138,16 @@
             
             // Reset file input
             event.target.value = '';
+        }
+        
+        // ========== About SGPA Section Toggle ==========
+        
+        function toggleAboutSection() {
+            const content = document.getElementById('accordionContent');
+            const icon = document.getElementById('accordionIcon');
+            
+            content.classList.toggle('open');
+            icon.classList.toggle('rotated');
         }
     </script>
 
