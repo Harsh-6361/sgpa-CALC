@@ -130,6 +130,14 @@
             font-size: 14px;
             min-height: 40px;
         }
+        .btn-secondary {
+            background-color: #393e46;
+            color: #61dafb;
+            border: 2px solid #61dafb;
+        }
+        .btn-secondary:hover {
+            background-color: #4a5568;
+        }
         .result {
             margin-top: 20px;
             font-size: 20px;
@@ -166,6 +174,91 @@
             border-radius: 15px;
         }
         #printBtn {
+            display: none;
+        }
+        /* Dashboard styles */
+        .dashboard {
+            display: none;
+            margin-top: 20px;
+        }
+        .semester-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .semester-card {
+            background: linear-gradient(145deg, #393e46, #2d3139);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 2px solid transparent;
+        }
+        .semester-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            border-color: #61dafb;
+        }
+        .semester-card.active {
+            border-color: #f8c445;
+        }
+        .semester-card.has-data {
+            background: linear-gradient(145deg, #2d5016, #1f3a0f);
+        }
+        .semester-card .sem-number {
+            font-size: 18px;
+            font-weight: bold;
+            color: #61dafb;
+        }
+        .semester-card .sem-sgpa {
+            font-size: 24px;
+            color: #f8c445;
+            margin-top: 8px;
+        }
+        .semester-card .sem-empty {
+            font-size: 14px;
+            color: #888;
+            margin-top: 8px;
+        }
+        .cgpa-card {
+            background: linear-gradient(145deg, #5a3e1b, #3d2a12);
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid #f8c445;
+        }
+        .cgpa-card .cgpa-label {
+            font-size: 16px;
+            color: #61dafb;
+        }
+        .cgpa-card .cgpa-value {
+            font-size: 36px;
+            color: #f8c445;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .cgpa-card .cgpa-percentage {
+            font-size: 18px;
+            color: #61dafb;
+        }
+        .hidden {
+            display: none !important;
+        }
+        /* Data management section */
+        .data-management {
+            margin-top: 20px;
+            padding: 15px;
+            background: #2d3139;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .data-management h4 {
+            margin-top: 0;
+            color: #61dafb;
+        }
+        #fileInput {
             display: none;
         }
 
@@ -206,6 +299,9 @@
                 padding: 8px;
                 font-size: 12px;
             }
+            .semester-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
     </style>
 </head>
@@ -214,52 +310,319 @@
         <h2>🎮 SGPA Calculator! 🎮</h2>
         <div class="avatar"></div>
         
-        <!-- User Information Section -->
-        <div class="user-info">
+        <!-- Step 1: USN Entry -->
+        <div id="usnEntry" class="user-info">
             <div class="form-group">
                 <label for="usn">📝 University Serial Number (USN)</label>
-                <input type="text" id="usn" placeholder="Enter your USN (e.g., 1AB21CS001)" required onblur="loadUserData()">
+                <input type="text" id="usn" placeholder="Enter your USN (e.g., 1AB21CS001)" required>
             </div>
+            <button class="btn" onclick="checkUSN()">Continue</button>
+        </div>
+        
+        <!-- Step 2: Username Entry (for new users) -->
+        <div id="usernameEntry" class="user-info hidden">
+            <h3 style="color: #f8c445; margin-top: 0;">👋 Welcome, New User!</h3>
             <div class="form-group">
-                <label for="semester">📅 Semester Number</label>
-                <input type="number" id="semester" min="1" max="8" placeholder="Enter semester (1-8)" required onchange="loadSemesterData()">
+                <label for="username">📛 Enter Your Name</label>
+                <input type="text" id="username" placeholder="Enter your full name" required>
             </div>
-            <div id="userStatus" style="margin-top: 15px; padding: 10px; border-radius: 8px; display: none;"></div>
-            <div id="cgpaDisplay" style="margin-top: 15px; padding: 15px; background: #20232a; border-radius: 8px; display: none;">
-                <h3 style="margin-top: 0; color: #f8c445;">📊 Your Academic Summary</h3>
-                <div id="semesterList"></div>
-                <div id="cgpaValue" style="font-size: 20px; margin-top: 15px; font-weight: bold;"></div>
+            <button class="btn" onclick="registerNewUser()">Register & Continue</button>
+            <button class="btn btn-secondary" onclick="goBackToUSN()">← Back</button>
+        </div>
+        
+        <!-- Step 3: Dashboard (for existing users) -->
+        <div id="dashboard" class="user-info hidden">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                <h3 style="color: #f8c445; margin: 0;">📊 <span id="welcomeUser"></span>'s Dashboard</h3>
+                <button class="btn btn-secondary" style="padding: 8px 16px; font-size: 14px;" onclick="logout()">🚪 Logout</button>
+            </div>
+            <p style="color: #888; margin: 10px 0;">USN: <span id="displayUSN"></span></p>
+            
+            <h4 style="color: #61dafb; margin-top: 20px;">Select a Semester</h4>
+            <div class="semester-cards" id="semesterCards">
+                <!-- Semester cards will be generated by JavaScript -->
+            </div>
+            
+            <div id="cgpaCardContainer">
+                <!-- CGPA card will be generated by JavaScript -->
             </div>
         </div>
         
-        <div class="table-wrapper">
-        <table id="gradeTable">
-            <thead>
-                <tr>
-                    <th>📚 Credits (Ci)</th>
-                    <th>✏️ Marks</th>
-                    <th>🏆 Grade Point (Gi)</th>
-                    <th>🛠️ Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
+        <!-- Step 4: Semester Input Form -->
+        <div id="semesterForm" class="hidden">
+            <div class="user-info">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                    <h3 style="color: #f8c445; margin: 0;">📝 Semester <span id="currentSemester"></span></h3>
+                    <button class="btn btn-secondary" style="padding: 8px 16px; font-size: 14px;" onclick="goBackToDashboard()">← Back to Dashboard</button>
+                </div>
+            </div>
+        
+            <div class="table-wrapper">
+            <table id="gradeTable">
+                <thead>
+                    <tr>
+                        <th>📚 Credits (Ci)</th>
+                        <th>✏️ Marks</th>
+                        <th>🏆 Grade Point (Gi)</th>
+                        <th>🛠️ Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><input type="number" placeholder="Credits" required></td>
+                        <td><input type="number" placeholder="Marks" required></td>
+                        <td><input type="number" placeholder="Grade Point" readonly></td>
+                        <td><button class="btn btn-remove" onclick="removeRow(this)">🗑️ Remove</button></td>
+                    </tr>
+                </tbody>
+            </table>
+            </div>
+            <button class="btn" onclick="addRow()">➕ Add Subject</button>
+            <button class="btn" onclick="calculateSGPA()">💯 Calculate SGPA</button>
+            <div class="result" id="result"></div>
+            <div class="message" id="message"></div>
+            <button class="btn" id="printBtn" onclick="printResult()">🖨️ Print Result</button>
+        </div>
+        
+        <!-- Data Management Section -->
+        <div class="data-management">
+            <h4>💾 Data Management</h4>
+            <p style="color: #888; font-size: 14px;">Export your data as JSON file or import from a previously saved file</p>
+            <button class="btn btn-secondary" onclick="exportToJSON()">📥 Export Data</button>
+            <button class="btn btn-secondary" onclick="document.getElementById('fileInput').click()">📤 Import Data</button>
+            <input type="file" id="fileInput" accept=".json" onchange="importFromJSON(event)">
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let currentUSN = '';
+        let currentSemesterNum = null;
+        
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            // Try to load data from localStorage (migrated from JSON file if previously exported)
+            loadFromLocalStorage();
+        });
+        
+        // ========== USN and User Flow Functions ==========
+        
+        function checkUSN() {
+            const usn = document.getElementById('usn').value.trim().toUpperCase();
+            if (!usn) {
+                alert('⚠️ Please enter your USN');
+                return;
+            }
+            
+            currentUSN = usn;
+            const userData = getUserData(usn);
+            
+            if (userData && userData.username) {
+                // Existing user - show dashboard
+                showDashboard(userData);
+            } else {
+                // New user - show username entry
+                showUsernameEntry();
+            }
+        }
+        
+        function showUsernameEntry() {
+            document.getElementById('usnEntry').classList.add('hidden');
+            document.getElementById('usernameEntry').classList.remove('hidden');
+            document.getElementById('dashboard').classList.add('hidden');
+            document.getElementById('semesterForm').classList.add('hidden');
+        }
+        
+        function goBackToUSN() {
+            document.getElementById('usnEntry').classList.remove('hidden');
+            document.getElementById('usernameEntry').classList.add('hidden');
+            document.getElementById('dashboard').classList.add('hidden');
+            document.getElementById('semesterForm').classList.add('hidden');
+        }
+        
+        function registerNewUser() {
+            const username = document.getElementById('username').value.trim();
+            if (!username) {
+                alert('⚠️ Please enter your name');
+                return;
+            }
+            
+            // Create new user
+            const allUsers = getAllUsers();
+            allUsers[currentUSN] = {
+                usn: currentUSN,
+                username: username,
+                semesters: {},
+                createdAt: new Date().toISOString()
+            };
+            saveAllUsers(allUsers);
+            
+            // Show dashboard
+            showDashboard(allUsers[currentUSN]);
+        }
+        
+        function showDashboard(userData) {
+            document.getElementById('usnEntry').classList.add('hidden');
+            document.getElementById('usernameEntry').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            document.getElementById('semesterForm').classList.add('hidden');
+            
+            // Update welcome message
+            document.getElementById('welcomeUser').textContent = userData.username || userData.usn;
+            document.getElementById('displayUSN').textContent = userData.usn;
+            
+            // Generate semester cards
+            generateSemesterCards(userData);
+            
+            // Generate CGPA card
+            generateCGPACard(userData);
+        }
+        
+        function generateSemesterCards(userData) {
+            const container = document.getElementById('semesterCards');
+            container.innerHTML = '';
+            
+            for (let sem = 1; sem <= 8; sem++) {
+                const card = document.createElement('div');
+                card.className = 'semester-card';
+                
+                const semData = userData.semesters[sem];
+                if (semData) {
+                    card.classList.add('has-data');
+                    card.innerHTML = `
+                        <div class="sem-number">Semester ${sem}</div>
+                        <div class="sem-sgpa">SGPA: ${semData.sgpa}</div>
+                    `;
+                } else {
+                    card.innerHTML = `
+                        <div class="sem-number">Semester ${sem}</div>
+                        <div class="sem-empty">No data</div>
+                    `;
+                }
+                
+                card.onclick = function() { openSemester(sem); };
+                container.appendChild(card);
+            }
+        }
+        
+        function generateCGPACard(userData) {
+            const container = document.getElementById('cgpaCardContainer');
+            const semesters = userData.semesters;
+            const semesterNumbers = Object.keys(semesters).map(Number).sort((a, b) => a - b);
+            
+            if (semesterNumbers.length === 0) {
+                container.innerHTML = `
+                    <div class="cgpa-card" style="background: #2d3139; border-color: #61dafb;">
+                        <div class="cgpa-label">📊 Cumulative GPA</div>
+                        <div class="cgpa-value" style="font-size: 20px; color: #888;">No semester data yet</div>
+                        <div class="cgpa-percentage">Add your first semester to see CGPA</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Calculate CGPA
+            let totalCredits = 0;
+            let totalCiGi = 0;
+            
+            semesterNumbers.forEach(sem => {
+                const semData = semesters[sem];
+                totalCredits += semData.totalCredits || 0;
+                totalCiGi += semData.totalCiGi || 0;
+            });
+            
+            if (totalCredits === 0) {
+                container.innerHTML = `
+                    <div class="cgpa-card" style="background: #2d3139; border-color: #61dafb;">
+                        <div class="cgpa-label">📊 Cumulative GPA</div>
+                        <div class="cgpa-value" style="font-size: 20px; color: #888;">Invalid credit data</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            const cgpa = totalCiGi / totalCredits;
+            // VTU official formula for CGPA to Percentage conversion: Percentage = (CGPA - 0.5) * 10
+            const cgpaPercentage = (cgpa - 0.5) * 10;
+            
+            container.innerHTML = `
+                <div class="cgpa-card">
+                    <div class="cgpa-label">📊 Cumulative GPA (${semesterNumbers.length} semester${semesterNumbers.length > 1 ? 's' : ''})</div>
+                    <div class="cgpa-value">${cgpa.toFixed(2)}</div>
+                    <div class="cgpa-percentage">Equivalent to: ${cgpaPercentage.toFixed(2)}%</div>
+                </div>
+            `;
+        }
+        
+        function openSemester(semNum) {
+            currentSemesterNum = semNum;
+            
+            document.getElementById('usnEntry').classList.add('hidden');
+            document.getElementById('usernameEntry').classList.add('hidden');
+            document.getElementById('dashboard').classList.add('hidden');
+            document.getElementById('semesterForm').classList.remove('hidden');
+            
+            document.getElementById('currentSemester').textContent = semNum;
+            
+            // Load existing semester data if available
+            const userData = getUserData(currentUSN);
+            const table = document.getElementById("gradeTable").getElementsByTagName('tbody')[0];
+            table.innerHTML = '';
+            
+            if (userData && userData.semesters[semNum]) {
+                const semData = userData.semesters[semNum];
+                
+                // Load saved subjects
+                semData.subjects.forEach(subject => {
+                    const row = table.insertRow(-1);
+                    row.innerHTML = `
+                        <td><input type="number" placeholder="Credits" value="${subject.credits}" required></td>
+                        <td><input type="number" placeholder="Marks" value="${subject.marks}" required></td>
+                        <td><input type="number" placeholder="Grade Point" value="${subject.gradePoint}" readonly></td>
+                        <td><button class="btn btn-remove" onclick="removeRow(this)">🗑️ Remove</button></td>
+                    `;
+                });
+                
+                // Display SGPA for this semester
+                document.getElementById("result").innerHTML = 
+                    'Saved SGPA for Semester ' + semNum + ': <span>' + semData.sgpa + '</span><br>' +
+                    'Equivalent to: <span>' + semData.percentage + '%</span>';
+                document.getElementById("message").textContent = semData.message || '';
+                document.getElementById("printBtn").style.display = 'inline-block';
+            } else {
+                // Add empty row for new semester
+                const row = table.insertRow(-1);
+                row.innerHTML = `
                     <td><input type="number" placeholder="Credits" required></td>
                     <td><input type="number" placeholder="Marks" required></td>
                     <td><input type="number" placeholder="Grade Point" readonly></td>
                     <td><button class="btn btn-remove" onclick="removeRow(this)">🗑️ Remove</button></td>
-                </tr>
-            </tbody>
-        </table>
-        </div>
-        <button class="btn" onclick="addRow()">➕ Add Subject</button>
-        <button class="btn" onclick="calculateSGPA()">💯 Calculate SGPA</button>
-        <div class="result" id="result"></div>
-        <div class="message" id="message"></div>
-        <button class="btn" id="printBtn" onclick="printResult()">🖨️ Print Result</button>
-    </div>
-
-    <script>
+                `;
+                document.getElementById("result").innerHTML = '';
+                document.getElementById("message").textContent = '';
+                document.getElementById("printBtn").style.display = 'none';
+            }
+        }
+        
+        function goBackToDashboard() {
+            const userData = getUserData(currentUSN);
+            if (userData) {
+                showDashboard(userData);
+            } else {
+                goBackToUSN();
+            }
+        }
+        
+        function logout() {
+            currentUSN = '';
+            currentSemesterNum = null;
+            document.getElementById('usn').value = '';
+            document.getElementById('username').value = '';
+            goBackToUSN();
+        }
+        
+        // ========== Table Functions ==========
+        
         function addRow() {
             var table = document.getElementById("gradeTable").getElementsByTagName('tbody')[0];
             var row = table.insertRow(-1);
@@ -273,245 +636,33 @@
             cell3.innerHTML = '<input type="number" placeholder="Grade Point" readonly>';
             cell4.innerHTML = '<button class="btn btn-remove" onclick="removeRow(this)">🗑️ Remove</button>';
         }
+        
         function removeRow(btn) {
             var row = btn.parentNode.parentNode;
             row.remove();
         }
         
-        // Load user data when USN is entered
-        function loadUserData() {
-            const usn = document.getElementById('usn').value.trim().toUpperCase();
-            if (!usn) return;
-            
-            const userData = getUserData(usn);
-            const statusDiv = document.getElementById('userStatus');
-            const cgpaDiv = document.getElementById('cgpaDisplay');
-            
-            if (userData && Object.keys(userData.semesters).length > 0) {
-                // Existing user - use textContent to prevent XSS
-                statusDiv.textContent = `✅ Welcome back, ${usn}! Your data has been found.`;
-                statusDiv.style.backgroundColor = '#2d5016';
-                statusDiv.style.display = 'block';
-                
-                // Display CGPA and semester summary
-                displayCGPA(userData);
-            } else {
-                // New user - use textContent to prevent XSS
-                statusDiv.textContent = `👋 Welcome ${usn}! You're a new user. Please register your marks for all 8 semesters.`;
-                statusDiv.style.backgroundColor = '#5a3e1b';
-                statusDiv.style.display = 'block';
-                cgpaDiv.style.display = 'none';
-            }
-        }
-        
-        // Load semester data when semester number is changed
-        function loadSemesterData() {
-            const usn = document.getElementById('usn').value.trim().toUpperCase();
-            const semester = parseInt(document.getElementById('semester').value);
-            
-            if (!usn || !semester) return;
-            
-            const userData = getUserData(usn);
-            if (userData && userData.semesters[semester]) {
-                const semData = userData.semesters[semester];
-                
-                // Clear existing table rows
-                const table = document.getElementById("gradeTable").getElementsByTagName('tbody')[0];
-                table.innerHTML = '';
-                
-                // Load saved subjects - properly escape values
-                semData.subjects.forEach(subject => {
-                    const row = table.insertRow(-1);
-                    const creditsInput = document.createElement('input');
-                    creditsInput.type = 'number';
-                    creditsInput.placeholder = 'Credits';
-                    creditsInput.value = subject.credits;
-                    creditsInput.required = true;
-                    row.insertCell(0).appendChild(creditsInput);
-                    
-                    const marksInput = document.createElement('input');
-                    marksInput.type = 'number';
-                    marksInput.placeholder = 'Marks';
-                    marksInput.value = subject.marks;
-                    marksInput.required = true;
-                    row.insertCell(1).appendChild(marksInput);
-                    
-                    const gradeInput = document.createElement('input');
-                    gradeInput.type = 'number';
-                    gradeInput.placeholder = 'Grade Point';
-                    gradeInput.value = subject.gradePoint;
-                    gradeInput.readOnly = true;
-                    row.insertCell(2).appendChild(gradeInput);
-                    
-                    row.insertCell(3).innerHTML = '<button class="btn btn-remove" onclick="removeRow(this)">🗑️ Remove</button>';
-                });
-                
-                // Display SGPA for this semester - using textContent for data
-                const resultDiv = document.getElementById("result");
-                resultDiv.innerHTML = '';
-                resultDiv.appendChild(document.createTextNode('Saved SGPA for Semester ' + semester + ': '));
-                const sgpaSpan = document.createElement('span');
-                sgpaSpan.textContent = semData.sgpa;
-                resultDiv.appendChild(sgpaSpan);
-                resultDiv.appendChild(document.createElement('br'));
-                resultDiv.appendChild(document.createTextNode('Equivalent to: '));
-                const percentSpan = document.createElement('span');
-                percentSpan.textContent = semData.percentage + '%';
-                resultDiv.appendChild(percentSpan);
-                
-                document.getElementById("message").textContent = semData.message || '';
-            }
-        }
-        
-        // Get user data from localStorage
-        function getUserData(usn) {
-            try {
-                const allUsers = JSON.parse(localStorage.getItem('sgpaUsers') || '{}');
-                return allUsers[usn] || null;
-            } catch (e) {
-                console.error('Error loading user data:', e);
-                return null;
-            }
-        }
-        
-        // Save user data to localStorage
-        function saveUserData(usn, semesterData) {
-            try {
-                const allUsers = JSON.parse(localStorage.getItem('sgpaUsers') || '{}');
-                
-                if (!allUsers[usn]) {
-                    allUsers[usn] = {
-                        usn: usn,
-                        semesters: {},
-                        createdAt: new Date().toISOString()
-                    };
-                }
-                
-                allUsers[usn].semesters[semesterData.semester] = semesterData;
-                allUsers[usn].lastUpdated = new Date().toISOString();
-                
-                localStorage.setItem('sgpaUsers', JSON.stringify(allUsers));
-                console.log('User data saved:', allUsers[usn]);
-                
-                return allUsers[usn];
-            } catch (e) {
-                console.error('Error saving user data:', e);
-                return null;
-            }
-        }
-        
-        // Calculate and display CGPA
-        function displayCGPA(userData) {
-            const cgpaDiv = document.getElementById('cgpaDisplay');
-            const semesterList = document.getElementById('semesterList');
-            const cgpaValue = document.getElementById('cgpaValue');
-            
-            const semesters = userData.semesters;
-            const semesterNumbers = Object.keys(semesters).map(Number).sort((a, b) => a - b);
-            
-            if (semesterNumbers.length === 0) {
-                cgpaDiv.style.display = 'none';
-                return;
-            }
-            
-            // Display list of semesters - use DOM methods to avoid XSS
-            const listContainer = document.createElement('div');
-            listContainer.style.cssText = 'display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 10px;';
-            
-            semesterNumbers.forEach(sem => {
-                const semData = semesters[sem];
-                const semBox = document.createElement('div');
-                semBox.style.cssText = 'background: #393e46; padding: 10px; border-radius: 8px; text-align: center;';
-                
-                const semLabel = document.createElement('div');
-                semLabel.style.cssText = 'font-weight: bold; color: #61dafb;';
-                semLabel.textContent = 'Sem ' + sem;
-                
-                const sgpaLabel = document.createElement('div');
-                sgpaLabel.style.cssText = 'font-size: 18px; color: #f8c445;';
-                sgpaLabel.textContent = 'SGPA: ' + semData.sgpa;
-                
-                semBox.appendChild(semLabel);
-                semBox.appendChild(sgpaLabel);
-                listContainer.appendChild(semBox);
-            });
-            
-            semesterList.innerHTML = '';
-            semesterList.appendChild(listContainer);
-            
-            // Calculate CGPA with division by zero check
-            let totalCredits = 0;
-            let totalCiGi = 0;
-            
-            semesterNumbers.forEach(sem => {
-                const semData = semesters[sem];
-                totalCredits += semData.totalCredits || 0;
-                totalCiGi += semData.totalCiGi || 0;
-            });
-            
-            // Prevent division by zero
-            if (totalCredits === 0) {
-                cgpaValue.textContent = 'No valid credit data available';
-                cgpaDiv.style.display = 'block';
-                return;
-            }
-            
-            const cgpa = totalCiGi / totalCredits;
-            const cgpaPercentage = (cgpa - 0.75) * 10;
-            
-            // Build CGPA display using DOM methods
-            cgpaValue.innerHTML = '';
-            
-            const cgpaLine = document.createElement('div');
-            cgpaLine.style.cssText = 'color: #f8c445;';
-            cgpaLine.appendChild(document.createTextNode(
-                'CGPA (' + semesterNumbers.length + ' semester' + 
-                (semesterNumbers.length > 1 ? 's' : '') + '): '
-            ));
-            const cgpaSpan = document.createElement('span');
-            cgpaSpan.style.fontSize = '24px';
-            cgpaSpan.textContent = cgpa.toFixed(2);
-            cgpaLine.appendChild(cgpaSpan);
-            
-            const percentLine = document.createElement('div');
-            percentLine.style.cssText = 'color: #61dafb; margin-top: 5px;';
-            percentLine.appendChild(document.createTextNode('Equivalent to: '));
-            const percentSpan = document.createElement('span');
-            percentSpan.style.fontSize = '20px';
-            percentSpan.textContent = cgpaPercentage.toFixed(2) + '%';
-            percentLine.appendChild(percentSpan);
-            
-            cgpaValue.appendChild(cgpaLine);
-            cgpaValue.appendChild(percentLine);
-            
-            cgpaDiv.style.display = 'block';
-        }
-        
-        // Function to save data to JSON file (localStorage for browser) - LEGACY SUPPORT
-        function saveToJSON(data) {
-            // Keep legacy function for backward compatibility
-            // New data structure is handled by saveUserData
-            console.log('Legacy save function called, data managed by new structure');
-        }
+        // ========== SGPA Calculation Functions ==========
         
         function calculateSGPA() {
-            // Validate USN and Semester
-            const usn = document.getElementById('usn').value.trim().toUpperCase();
-            const semester = parseInt(document.getElementById('semester').value);
-            
-            if (!usn) {
-                alert('⚠️ Please enter your USN');
-                document.getElementById('usn').focus();
+            if (!currentUSN) {
+                alert('⚠️ Please enter your USN first');
                 return;
             }
             
-            if (!semester || semester < 1 || semester > 8) {
-                alert('⚠️ Please enter a valid semester number (1-8)');
-                document.getElementById('semester').focus();
+            if (!currentSemesterNum) {
+                alert('⚠️ Please select a semester');
                 return;
             }
             
             var table = document.getElementById("gradeTable");
+            
+            // Check if any subjects are entered before processing
+            if (table.rows.length <= 1) {
+                alert('⚠️ Please add at least one subject');
+                return;
+            }
+            
             var totalCi = 0;
             var totalCiGi = 0;
             var calculationDetails = "";
@@ -564,7 +715,8 @@
             }
 
             var sgpa = totalCiGi / totalCi;
-            var percentage = (sgpa - 0.75) * 10;
+            // VTU official formula for SGPA to Percentage conversion: Percentage = (SGPA - 0.5) * 10
+            var percentage = (sgpa - 0.5) * 10;
 
             document.getElementById("result").innerHTML = "Your SGPA is: <span>" + sgpa.toFixed(2) + "</span><br>That's equivalent to: <span>" + percentage.toFixed(2) + "%</span>";
 
@@ -585,9 +737,9 @@
 
             document.getElementById("message").innerHTML = selectedQuote;
 
-            // Save semester data to new user structure
+            // Save semester data
             const semesterData = {
-                semester: semester,
+                semester: currentSemesterNum,
                 subjects: subjects,
                 totalCredits: totalCi,
                 totalCiGi: totalCiGi,
@@ -597,16 +749,11 @@
                 timestamp: new Date().toISOString()
             };
             
-            const userData = saveUserData(usn, semesterData);
-            
-            // Update the display to show CGPA
-            if (userData) {
-                displayCGPA(userData);
-            }
+            saveUserSemesterData(currentUSN, semesterData);
 
             // Store in session storage for print page
-            sessionStorage.setItem('usn', usn);
-            sessionStorage.setItem('semester', semester);
+            sessionStorage.setItem('usn', currentUSN);
+            sessionStorage.setItem('semester', currentSemesterNum);
             sessionStorage.setItem('calculationDetails', calculationDetails);
             sessionStorage.setItem('totalCredits', totalCi);
             sessionStorage.setItem('totalCiGi', totalCiGi);
@@ -630,6 +777,133 @@
 
         function printResult() {
             window.open('print.html');
+        }
+        
+        // ========== Data Storage Functions ==========
+        
+        function getAllUsers() {
+            try {
+                return JSON.parse(localStorage.getItem('sgpaUsers') || '{}');
+            } catch (e) {
+                console.error('Error loading users:', e);
+                return {};
+            }
+        }
+        
+        function saveAllUsers(users) {
+            try {
+                localStorage.setItem('sgpaUsers', JSON.stringify(users));
+            } catch (e) {
+                console.error('Error saving users:', e);
+            }
+        }
+        
+        function getUserData(usn) {
+            try {
+                const allUsers = getAllUsers();
+                return allUsers[usn] || null;
+            } catch (e) {
+                console.error('Error loading user data:', e);
+                return null;
+            }
+        }
+        
+        function saveUserSemesterData(usn, semesterData) {
+            try {
+                const allUsers = getAllUsers();
+                
+                if (!allUsers[usn]) {
+                    allUsers[usn] = {
+                        usn: usn,
+                        username: '',
+                        semesters: {},
+                        createdAt: new Date().toISOString()
+                    };
+                }
+                
+                allUsers[usn].semesters[semesterData.semester] = semesterData;
+                allUsers[usn].lastUpdated = new Date().toISOString();
+                
+                saveAllUsers(allUsers);
+                console.log('User data saved:', allUsers[usn]);
+                
+                return allUsers[usn];
+            } catch (e) {
+                console.error('Error saving user data:', e);
+                return null;
+            }
+        }
+        
+        function loadFromLocalStorage() {
+            // This function ensures backward compatibility
+            // Data is automatically available from localStorage
+            const allUsers = getAllUsers();
+            const userCount = Object.keys(allUsers).length;
+            console.log(`App initialized. Loaded ${userCount} user(s) from localStorage.`);
+        }
+        
+        // ========== JSON File Import/Export Functions ==========
+        
+        function exportToJSON() {
+            const allUsers = getAllUsers();
+            
+            if (Object.keys(allUsers).length === 0) {
+                alert('⚠️ No data to export. Please add some semester data first.');
+                return;
+            }
+            
+            const dataStr = JSON.stringify(allUsers, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `sgpa_data_${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            alert('✅ Data exported successfully!');
+        }
+        
+        function importFromJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    
+                    // Validate the structure
+                    if (typeof importedData !== 'object') {
+                        throw new Error('Invalid data format');
+                    }
+                    
+                    // Merge with existing data
+                    const existingUsers = getAllUsers();
+                    const mergedUsers = { ...existingUsers, ...importedData };
+                    
+                    saveAllUsers(mergedUsers);
+                    
+                    alert('✅ Data imported successfully! ' + Object.keys(importedData).length + ' user(s) imported.');
+                    
+                    // Refresh if user is logged in
+                    if (currentUSN) {
+                        const userData = getUserData(currentUSN);
+                        if (userData) {
+                            showDashboard(userData);
+                        }
+                    }
+                } catch (error) {
+                    alert('❌ Error importing data: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+            
+            // Reset file input
+            event.target.value = '';
         }
     </script>
 
