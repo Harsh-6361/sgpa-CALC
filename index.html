@@ -1,136 +1,161 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SGPA Quest - Level Up Your Grades!</title>
+    <title>SGPA Calculator</title>
     <style>
         * {
             box-sizing: border-box;
         }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             margin: 0;
-            padding: 15px;
-            background-color: #20232a;
-            color: #61dafb;
+            padding: 10px;
+            background-color: #f0f2f5;
+            color: #333;
             text-align: center;
             min-height: 100vh;
         }
+
         .container {
             max-width: 800px;
             margin: 0 auto;
-            background: #282c34;
+            background: #ffffff;
             padding: 20px;
             border-radius: 15px;
-            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
         }
+
         h2 {
             font-size: 24px;
             margin-bottom: 20px;
             line-height: 1.3;
         }
+
         /* User Info Section */
         .user-info {
-            background: #393e46;
+            background: #e4e6eb;
             padding: 20px;
             border-radius: 12px;
             margin-bottom: 25px;
             text-align: left;
         }
+
         .form-group {
             margin-bottom: 15px;
         }
+
         .form-group label {
             display: block;
             font-size: 14px;
             font-weight: 600;
             margin-bottom: 8px;
-            color: #61dafb;
+            color: #333;
         }
+
         .form-group input[type="text"],
         .form-group input[type="number"] {
             width: 100%;
             padding: 12px;
-            border: 2px solid #61dafb;
+            border: 2px solid #ccc;
             border-radius: 10px;
-            background-color: #20232a;
-            color: #61dafb;
+            background-color: #fff;
+            color: #333;
             font-size: 16px;
             transition: border-color 0.3s;
         }
+
         .form-group input:focus {
             outline: none;
-            border-color: #38a1db;
-            box-shadow: 0 0 0 3px rgba(97, 218, 251, 0.1);
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
         }
+
         /* Table wrapper for mobile scrolling */
         .table-wrapper {
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
             margin-bottom: 20px;
         }
+
         table {
             width: 100%;
             border-collapse: separate;
             border-spacing: 0 10px;
             min-width: 500px;
         }
-        table, th, td {
+
+        table,
+        th,
+        td {
             border: none;
         }
-        th, td {
+
+        th,
+        td {
             padding: 12px;
             text-align: center;
         }
+
         th {
-            background-color: #61dafb;
-            color: #20232a;
+            background-color: #007bff;
+            color: #fff;
             font-weight: bold;
             border-radius: 10px;
             font-size: 14px;
         }
+
         td {
-            background-color: #393e46;
+            background-color: #f8f9fa;
             border-radius: 10px;
         }
+
         td input[type="number"] {
             width: 90%;
             padding: 10px;
-            border: 2px solid #61dafb;
+            border: 2px solid #ccc;
             border-radius: 10px;
-            background-color: #20232a;
-            color: #61dafb;
+            background-color: #fff;
+            color: #333;
             text-align: center;
             font-size: 16px;
             transition: all 0.3s ease;
         }
+
         td input[type="number"]:focus {
             outline: none;
-            border-color: #f8c445;
-            box-shadow: 0 0 0 4px rgba(248, 196, 69, 0.3);
-            background-color: #2d3139;
+            border-color: #007bff;
+            box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.1);
+            background-color: #fff;
             transform: scale(1.02);
         }
+
         td input[type="number"]::placeholder {
             color: #888;
         }
+
         .active-input-row {
-            background-color: rgba(97, 218, 251, 0.1) !important;
+            background-color: rgba(0, 123, 255, 0.05) !important;
         }
+
         .active-input-row td {
-            background-color: rgba(97, 218, 251, 0.15) !important;
+            background-color: rgba(0, 123, 255, 0.1) !important;
         }
+
         .row-number {
             font-weight: bold;
-            color: #f8c445;
+            color: #007bff;
             font-size: 16px;
             min-width: 40px;
         }
+
         .btn {
             padding: 12px 28px;
-            background-color: #61dafb;
-            color: #20232a;
+            background-color: #007bff;
+            color: #fff;
             border: none;
             border-radius: 50px;
             cursor: pointer;
@@ -138,149 +163,169 @@
             font-weight: 600;
             margin: 8px;
             transition: transform 0.2s, background-color 0.3s;
-            min-height: 44px; /* Touch target size for mobile */
+            min-height: 44px;
+            /* Touch target size for mobile */
             touch-action: manipulation;
         }
+
         .btn:hover {
-            background-color: #38a1db;
+            background-color: #0056b3;
             transform: scale(1.05);
         }
+
         .btn:active {
             transform: scale(0.98);
         }
+
         .btn-remove {
             padding: 8px 16px;
             font-size: 14px;
-            min-height: 40px;
+            min-height: 48px;
+            /* Increased for mobile touch target */
         }
+
         .btn-secondary {
-            background-color: #393e46;
-            color: #61dafb;
-            border: 2px solid #61dafb;
+            background-color: #e2e6ea;
+            color: #007bff;
+            border: 2px solid #007bff;
         }
+
         .btn-secondary:hover {
-            background-color: #4a5568;
+            background-color: #dbe2e8;
         }
+
         .result {
             margin-top: 20px;
             font-size: 20px;
             line-height: 1.6;
         }
+
         .result span {
-            color: #f8c445;
+            color: #28a745;
             font-weight: bold;
         }
+
         .message {
             margin-top: 20px;
             font-size: 18px;
-            color: #f8c445;
+            color: #856404;
             line-height: 1.5;
             padding: 15px;
-            background: rgba(248, 196, 69, 0.1);
+            background: #fff3cd;
             border-radius: 10px;
         }
-        .avatar {
-            display: block;
-            margin: 20px auto;
-            width: 100px;
-            height: 100px;
-            background: url('Designer.jpeg') no-repeat center center;
-            background-size: cover;
-            border-radius: 50%;
-            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
-        }
+
         footer {
-            background-color: #20232a;
+            background-color: #f0f2f5;
             padding: 15px;
             margin-top: 40px;
-            color: #61dafb;
+            color: #333;
             border-radius: 15px;
         }
+
         #printBtn {
             display: none;
         }
+
         /* Dashboard styles */
         .dashboard {
             display: none;
             margin-top: 20px;
         }
+
         .semester-cards {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
             gap: 15px;
             margin-bottom: 20px;
         }
+
         .semester-card {
-            background: linear-gradient(145deg, #393e46, #2d3139);
+            background: linear-gradient(145deg, #ffffff, #f0f0f0);
             padding: 20px;
             border-radius: 12px;
             text-align: center;
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
             border: 2px solid transparent;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
         }
+
         .semester-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-            border-color: #61dafb;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            border-color: #007bff;
         }
+
         .semester-card.active {
-            border-color: #f8c445;
+            border-color: #ffc107;
         }
+
         .semester-card.has-data {
-            background: linear-gradient(145deg, #2d5016, #1f3a0f);
+            background: linear-gradient(145deg, #d4edda, #c3e6cb);
         }
+
         .semester-card .sem-number {
             font-size: 18px;
             font-weight: bold;
-            color: #61dafb;
+            color: #007bff;
         }
+
         .semester-card .sem-sgpa {
             font-size: 24px;
-            color: #f8c445;
+            color: #856404;
             margin-top: 8px;
         }
+
         .semester-card .sem-empty {
             font-size: 14px;
-            color: #888;
+            color: #6c757d;
             margin-top: 8px;
         }
+
         .cgpa-card {
-            background: linear-gradient(145deg, #5a3e1b, #3d2a12);
+            background: linear-gradient(145deg, #fff3cd, #ffeeba);
             padding: 25px;
             border-radius: 12px;
             text-align: center;
-            border: 2px solid #f8c445;
+            border: 2px solid #ffc107;
         }
+
         .cgpa-card .cgpa-label {
             font-size: 16px;
-            color: #61dafb;
+            color: #333;
         }
+
         .cgpa-card .cgpa-value {
             font-size: 36px;
-            color: #f8c445;
+            color: #856404;
             font-weight: bold;
             margin: 10px 0;
         }
+
         .cgpa-card .cgpa-percentage {
             font-size: 18px;
-            color: #61dafb;
+            color: #333;
         }
+
         .hidden {
             display: none !important;
         }
+
         /* Data management section */
         .data-management {
             margin-top: 20px;
             padding: 15px;
-            background: #2d3139;
+            background: #f8f9fa;
             border-radius: 10px;
             text-align: center;
         }
+
         .data-management h4 {
             margin-top: 0;
-            color: #61dafb;
+            color: #007bff;
         }
+
         #fileInput {
             display: none;
         }
@@ -288,88 +333,111 @@
         /* About SGPA Section Styles */
         .about-sgpa {
             margin-top: 20px;
-            background: #2d3139;
+            background: transparent;
             border-radius: 12px;
             overflow: hidden;
         }
+
         .accordion-toggle {
             width: 100%;
             padding: 15px 20px;
-            background: linear-gradient(145deg, #393e46, #2d3139);
+            background: linear-gradient(145deg, #f8f9fa, #e9ecef);
             border: none;
             cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            color: #61dafb;
+            color: #007bff;
             font-size: 16px;
             font-weight: 600;
             transition: background 0.3s;
         }
+
         .accordion-toggle:hover {
-            background: linear-gradient(145deg, #4a5568, #393e46);
+            background: linear-gradient(145deg, #e2e6ea, #f8f9fa);
         }
+
         .accordion-icon {
             transition: transform 0.3s;
         }
+
         .accordion-icon.rotated {
             transform: rotate(180deg);
         }
+
         .accordion-content {
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.4s ease-out;
             padding: 0 20px;
         }
+
         .accordion-content.open {
             max-height: 2000px;
             padding: 20px;
         }
+
         .info-section {
             margin-bottom: 25px;
             text-align: left;
         }
+
         .info-section h4 {
             color: #f8c445;
             margin-bottom: 15px;
             font-size: 18px;
         }
-        .info-section ul, .info-section ol {
+
+        .info-section ul,
+        .info-section ol {
             padding-left: 20px;
             line-height: 1.8;
         }
+
         .info-section li {
             margin-bottom: 10px;
             color: #e0e0e0;
         }
+
         .info-section p {
             color: #e0e0e0;
             line-height: 1.6;
             margin-bottom: 10px;
         }
-        .grade-table, .example-table {
+
+        .grade-table,
+        .example-table {
             width: 100%;
             border-spacing: 0;
             margin-top: 10px;
         }
-        .grade-table th, .grade-table td,
-        .example-table th, .example-table td {
+
+        .grade-table th,
+        .grade-table td,
+        .example-table th,
+        .example-table td {
             padding: 10px 8px;
             font-size: 13px;
             text-align: center;
         }
-        .grade-table th, .example-table th {
+
+        .grade-table th,
+        .example-table th {
             background-color: #61dafb;
             color: #20232a;
         }
-        .grade-table td, .example-table td {
+
+        .grade-table td,
+        .example-table td {
             background-color: #393e46;
             color: #e0e0e0;
         }
+
         .total-row td {
             background-color: #4a5568 !important;
             color: #f8c445 !important;
         }
+
         .calculation-result {
             background: linear-gradient(145deg, #5a3e1b, #3d2a12);
             padding: 15px;
@@ -378,6 +446,7 @@
             margin-top: 15px;
             border: 2px solid #f8c445;
         }
+
         .calculation-result p {
             color: #f8c445;
             margin: 5px 0;
@@ -389,49 +458,58 @@
             body {
                 padding: 20px;
             }
+
             .container {
                 padding: 30px;
             }
+
             h2 {
                 font-size: 28px;
             }
+
             .avatar {
                 width: 120px;
                 height: 120px;
             }
         }
-        
+
         /* Small mobile optimization */
         @media only screen and (max-width: 400px) {
             body {
                 padding: 10px;
             }
+
             .container {
                 padding: 15px;
             }
+
             h2 {
                 font-size: 20px;
             }
+
             .btn {
                 padding: 10px 20px;
                 font-size: 14px;
                 margin: 5px;
             }
-            th, td {
+
+            th,
+            td {
                 padding: 8px;
                 font-size: 12px;
             }
+
             .semester-cards {
                 grid-template-columns: repeat(2, 1fr);
             }
         }
     </style>
 </head>
+
 <body>
     <div class="container">
-        <h2>🎮 SGPA Calculator! 🎮</h2>
-        <div class="avatar"></div>
-        
+        <h2>SGPA Calculator</h2>
+
         <!-- Step 1: USN Entry -->
         <div id="usnEntry" class="user-info">
             <div class="form-group">
@@ -440,10 +518,10 @@
             </div>
             <button class="btn" onclick="checkUSN()">Continue</button>
         </div>
-        
+
         <!-- Step 2: Username Entry (for new users) -->
         <div id="usernameEntry" class="user-info hidden">
-            <h3 style="color: #f8c445; margin-top: 0;">👋 Welcome, New User!</h3>
+            <h3 style="color: #d39e00; margin-top: 0;">👋 Welcome, New User!</h3>
             <div class="form-group">
                 <label for="username">📛 Enter Your Name</label>
                 <input type="text" id="username" placeholder="Enter your full name" required>
@@ -451,56 +529,64 @@
             <button class="btn" onclick="registerNewUser()">Register & Continue</button>
             <button class="btn btn-secondary" onclick="goBackToUSN()">← Back</button>
         </div>
-        
+
         <!-- Step 3: Dashboard (for existing users) -->
         <div id="dashboard" class="user-info hidden">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
-                <h3 style="color: #f8c445; margin: 0;">📊 <span id="welcomeUser"></span>'s Dashboard</h3>
-                <button class="btn btn-secondary" style="padding: 8px 16px; font-size: 14px;" onclick="logout()">🚪 Logout</button>
+                <h3 style="color: #d39e00; margin: 0;">📊 <span id="welcomeUser"></span>'s Dashboard</h3>
+                <button class="btn btn-secondary" style="padding: 8px 16px; font-size: 14px;" onclick="logout()">🚪
+                    Logout</button>
             </div>
-            <p style="color: #888; margin: 10px 0;">USN: <span id="displayUSN"></span></p>
-            
-            <h4 style="color: #61dafb; margin-top: 20px;">Select a Semester</h4>
+            <p style="color: #6c757d; margin: 10px 0;">USN: <span id="displayUSN"></span></p>
+
+            <h4 style="color: #007bff; margin-top: 20px;">Select a Semester</h4>
             <div class="semester-cards" id="semesterCards">
                 <!-- Semester cards will be generated by JavaScript -->
             </div>
-            
+
             <div id="cgpaCardContainer">
                 <!-- CGPA card will be generated by JavaScript -->
             </div>
         </div>
-        
+
         <!-- Step 4: Semester Input Form -->
         <div id="semesterForm" class="hidden">
             <div class="user-info">
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
-                    <h3 style="color: #f8c445; margin: 0;">📝 Semester <span id="currentSemester"></span></h3>
-                    <button class="btn btn-secondary" style="padding: 8px 16px; font-size: 14px;" onclick="goBackToDashboard()">← Back to Dashboard</button>
+                    <h3 style="color: #d39e00; margin: 0;">📝 Semester <span id="currentSemester"></span></h3>
+                    <button class="btn btn-secondary" style="padding: 8px 16px; font-size: 14px;"
+                        onclick="goBackToDashboard()">← Back to Dashboard</button>
                 </div>
-                <p style="color: #888; margin: 15px 0 0 0; font-size: 14px;">💡 <strong>Tip:</strong> Press <kbd style="background: #61dafb; color: #20232a; padding: 2px 6px; border-radius: 4px;">Enter</kbd> after entering credits to jump to marks, then <kbd style="background: #61dafb; color: #20232a; padding: 2px 6px; border-radius: 4px;">Enter</kbd> again to add a new subject!</p>
+                <p style="color: #6c757d; margin: 15px 0 0 0; font-size: 14px;">💡 <strong>Tip:</strong> Press <kbd
+                        style="background: #e9ecef; color: #333; padding: 2px 6px; border-radius: 4px; border: 1px solid #ccc;">Enter</kbd>
+                    after entering credits to jump to marks, then <kbd
+                        style="background: #e9ecef; color: #333; padding: 2px 6px; border-radius: 4px; border: 1px solid #ccc;">Enter</kbd>
+                    again to add a new subject!</p>
             </div>
-        
+
             <div class="table-wrapper">
-            <table id="gradeTable">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>📚 Credits (Ci)</th>
-                        <th>✏️ Marks</th>
-                        <th>🏆 Grade Point (Gi)</th>
-                        <th>🛠️ Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="row-number">1</td>
-                        <td><input type="number" placeholder="Credits" required onkeydown="handleEnterKey(event, this, 'credits')"></td>
-                        <td><input type="number" placeholder="Marks" required onkeydown="handleEnterKey(event, this, 'marks')"></td>
-                        <td><input type="number" placeholder="Grade Point" readonly></td>
-                        <td><button class="btn btn-remove" onclick="removeRow(this)">🗑️ Remove</button></td>
-                    </tr>
-                </tbody>
-            </table>
+                <table id="gradeTable">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>📚 Credits (Ci)</th>
+                            <th>✏️ Marks</th>
+                            <th>🏆 Grade Point (Gi)</th>
+                            <th>🛠️ Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="row-number">1</td>
+                            <td><input type="number" placeholder="Credits" required
+                                    onkeydown="handleEnterKey(event, this, 'credits')"></td>
+                            <td><input type="number" placeholder="Marks" required
+                                    onkeydown="handleEnterKey(event, this, 'marks')"></td>
+                            <td><input type="number" placeholder="Grade Point" readonly></td>
+                            <td><button class="btn btn-remove" onclick="removeRow(this)">🗑️ Remove</button></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
             <button class="btn" onclick="addRow()">➕ Add Subject</button>
             <button class="btn" onclick="calculateSGPA()">💯 Calculate SGPA</button>
@@ -508,175 +594,89 @@
             <div class="message" id="message"></div>
             <button class="btn" id="printBtn" onclick="printResult()">🖨️ Print Result</button>
         </div>
-        
+
+        <!-- Data Management Section -->
         <!-- Data Management Section -->
         <div class="data-management">
             <h4>💾 Data Management</h4>
-            <p style="color: #888; font-size: 14px;">Export your data as JSON file or import from a previously saved file</p>
-            <button class="btn btn-secondary" onclick="exportToJSON()">📥 Export Data</button>
-            <button class="btn btn-secondary" onclick="document.getElementById('fileInput').click()">📤 Import Data</button>
-            <input type="file" id="fileInput" accept=".json" onchange="importFromJSON(event)">
-        </div>
-
-        <!-- About SGPA Section -->
-        <div class="about-sgpa" id="aboutSGPA">
-            <button class="accordion-toggle" onclick="toggleAboutSection()">
-                <span>📚 Learn About SGPA</span>
-                <span class="accordion-icon" id="accordionIcon">▼</span>
-            </button>
-            <div class="accordion-content" id="accordionContent">
-                <div class="info-section">
-                    <h4>🎯 Why do we need SGPA in our life?</h4>
-                    <ul>
-                        <li><strong>Result Analytics:</strong> When your result comes out, SGPA gives you a unique way to explain your performance to parents and others, instead of explaining every subject's marks.</li>
-                        <li><strong>Credit-Based System:</strong> VTU subjects have different credits - more credits means more grade points. SGPA accounts for this weighted importance.</li>
-                        <li><strong>Scholarships & Entrance:</strong> Many scholarship programs and entrance forms rely on student's SGPA/CGPA as a key constraint.</li>
-                        <li><strong>Placements:</strong> Companies coming for campus placements show higher interest in students with better CGPA, as they believe higher CGPA indicates higher determination.</li>
-                        <li><strong>Temporary Grade Card:</strong> We provide a temporary grade card containing your SGPA with proof for your personal use.</li>
-                    </ul>
-                </div>
-
-                <div class="info-section">
-                    <h4>📖 Why do we need to calculate SGPA?</h4>
-                    <p>VTU follows the <strong>CBCS (Choice Based Credit System)</strong> scheme, which measures student's performance as grade points rather than marks.</p>
-                    <p>However, VTU doesn't provide a proper grade report for students to measure their overall academic performance easily.</p>
-                    <p>Our VTU SGPA Calculator follows the steps given in the <strong>official VTU documentation (Annexure 3 of regulations)</strong> to calculate your SGPA and CGPA accurately.</p>
-                </div>
-
-                <div class="info-section">
-                    <h4>📝 How to Calculate SGPA?</h4>
-                    <ol>
-                        <li>Get your result from the official VTU website.</li>
-                        <li>Convert marks of subjects into grades using the table below.</li>
-                        <li>Calculate the total credits of all subjects.</li>
-                        <li>Multiply each subject's grade points with its credit points.</li>
-                        <li>Divide the total sum of multiplied grade points by total credits.</li>
-                        <li>Or simply use our SGPA Calculator above! 🎮</li>
-                    </ol>
-                </div>
-
-                <div class="info-section">
-                    <h4>📊 Grade Point Table</h4>
-                    <div class="table-wrapper">
-                        <table class="grade-table">
-                            <thead>
-                                <tr>
-                                    <th>Letter Grade</th>
-                                    <th>O</th>
-                                    <th>A+</th>
-                                    <th>A</th>
-                                    <th>B+</th>
-                                    <th>B</th>
-                                    <th>C</th>
-                                    <th>P</th>
-                                    <th>F</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><strong>Description</strong></td>
-                                    <td>Outstanding</td>
-                                    <td>Excellent</td>
-                                    <td>Very Good</td>
-                                    <td>Good</td>
-                                    <td>Above Avg</td>
-                                    <td>Average</td>
-                                    <td>Pass</td>
-                                    <td>Fail</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Grade Point</strong></td>
-                                    <td>10</td>
-                                    <td>9</td>
-                                    <td>8</td>
-                                    <td>7</td>
-                                    <td>6</td>
-                                    <td>5</td>
-                                    <td>4</td>
-                                    <td>0</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>% of Marks</strong></td>
-                                    <td>90-100</td>
-                                    <td>80-89</td>
-                                    <td>70-79</td>
-                                    <td>60-69</td>
-                                    <td>55-59</td>
-                                    <td>50-54</td>
-                                    <td>40-49</td>
-                                    <td>0-39</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="info-section">
-                    <h4>📋 Example Calculation</h4>
-                    <p>Here's an example of how SGPA is calculated for one semester:</p>
-                    <div class="table-wrapper">
-                        <table class="example-table">
-                            <thead>
-                                <tr>
-                                    <th>Course</th>
-                                    <th>Credits</th>
-                                    <th>Grade</th>
-                                    <th>Grade Point</th>
-                                    <th>Credit Points (Ci × Gi)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr><td>XX11</td><td>3</td><td>A</td><td>8</td><td>3 × 8 = 24</td></tr>
-                                <tr><td>XX12</td><td>3</td><td>F (Absent)</td><td>0</td><td>3 × 0 = 0</td></tr>
-                                <tr><td>XX13</td><td>3</td><td>A+</td><td>9</td><td>3 × 9 = 27</td></tr>
-                                <tr><td>XX14</td><td>3</td><td>F</td><td>0</td><td>3 × 0 = 0</td></tr>
-                                <tr><td>XX15</td><td>3</td><td>B</td><td>6</td><td>3 × 6 = 18</td></tr>
-                                <tr><td>XX16</td><td>1</td><td>C</td><td>5</td><td>1 × 5 = 5</td></tr>
-                                <tr><td>XX17</td><td>1</td><td>A+</td><td>9</td><td>1 × 9 = 9</td></tr>
-                                <tr><td>XX18</td><td>2</td><td>B</td><td>6</td><td>2 × 6 = 12</td></tr>
-                                <tr><td>XX19</td><td>1</td><td>B</td><td>6</td><td>1 × 6 = 6</td></tr>
-                                <tr class="total-row">
-                                    <td><strong>Total</strong></td>
-                                    <td><strong>20</strong></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td><strong>101</strong></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="calculation-result">
-                        <p><strong>SGPA = Total Credit Points ÷ Total Credits</strong></p>
-                        <p><strong>SGPA = 101 ÷ 20 = 5.05</strong></p>
-                    </div>
-                </div>
+            <div id="connectionStatus" style="margin-bottom: 10px;">
+                <p style="color: #6c757d; font-size: 14px;">Connect to a local file to enable
+                    <strong>Auto-Save</strong>.
+                </p>
+                <button class="btn" style="background-color: #28a745;" onclick="connectToFile()">📂 Connect
+                    data.json</button>
             </div>
+            <p style="color: #6c757d; font-size: 14px; margin-top: 15px;">Or download manually (Snapshot):</p>
+            <button class="btn btn-secondary" onclick="exportToJSON()">📥 Download Data (data.json)</button>
         </div>
+
+        <!-- How to Use Section -->
+        <div
+            style="margin-top: 40px; padding: 20px; background: #fff3cd; border-radius: 12px; text-align: left; border: 1px solid #ffeeba;">
+            <h4 style="color: #856404; margin-top: 0; display: flex; align-items: center;">
+                <span style="font-size: 20px; margin-right: 10px;">⚠️</span> Important Note
+            </h4>
+            <div style="color: #856404; line-height: 1.6; margin-bottom: 15px;">
+                <strong>If you do not connect <code>data.json</code>:</strong>
+                <ul style="margin-top: 5px; margin-bottom: 15px;">
+                    <li>Your data is <strong>TEMPORARY</strong>. It will be lost if you refresh or close the page.</li>
+                    <li>You must use "Download Data" manually to save your progress.</li>
+                    <li style="color: #dc3545; font-weight: bold;">🔴 Connect the file to avoid losing data!</li>
+                </ul>
+            </div>
+
+            <h4 style="color: #007bff; margin-top: 20px; display: flex; align-items: center;">
+                <span style="font-size: 20px; margin-right: 10px;">ℹ️</span> How to Use
+            </h4>
+            <ol style="color: #495057; line-height: 1.6; padding-left: 20px; margin-bottom: 0;">
+                <li style="margin-bottom: 10px;">
+                    <strong>Login / Register:</strong> Enter your USN (e.g., 1DA...) and name to access your dashboard.
+                </li>
+                <li style="margin-bottom: 10px;">
+                    <strong>Enable Auto-Save:</strong> Click <span style="color: #28a745; font-weight: bold;">📂 Connect
+                        data.json</span>. This is highly recommended.
+                </li>
+                <li style="margin-bottom: 10px;">
+                    <strong>Mobile Friendly 📱:</strong> This app is designed for your phone! Tap input fields clearly
+                    and use the "Add Subject" button easily on touch screens.
+                </li>
+                <li>
+                    <strong>Result:</strong> Click "Calculate SGPA" to view results and "Print Result" for a PDF-ready
+                    version.
+                </li>
+            </ol>
+        </div>
+
+        <footer style="margin-top: 30px; text-align: center; color: #6c757d; font-size: 13px;">
+            <p>&copy; 2024 SGPA Calculator. Privacy First: Data stays on your device.</p>
+        </footer>
+
     </div>
 
     <script>
         // Global state
         let currentUSN = '';
         let currentSemesterNum = null;
-        
+
+        let fileHandle = null;
+
         // Initialize app
-        document.addEventListener('DOMContentLoaded', function() {
-            // Try to load data from localStorage (migrated from JSON file if previously exported)
-            loadFromLocalStorage();
+        document.addEventListener('DOMContentLoaded', function () {
+            // No localStorage loading. Data is session-only until connected.
         });
-        
+
         // ========== USN and User Flow Functions ==========
-        
+
         function checkUSN() {
             const usn = document.getElementById('usn').value.trim().toUpperCase();
             if (!usn) {
                 alert('⚠️ Please enter your USN');
                 return;
             }
-            
+
             currentUSN = usn;
             const userData = getUserData(usn);
-            
+
             if (userData && userData.username) {
                 // Existing user - show dashboard
                 showDashboard(userData);
@@ -685,28 +685,28 @@
                 showUsernameEntry();
             }
         }
-        
+
         function showUsernameEntry() {
             document.getElementById('usnEntry').classList.add('hidden');
             document.getElementById('usernameEntry').classList.remove('hidden');
             document.getElementById('dashboard').classList.add('hidden');
             document.getElementById('semesterForm').classList.add('hidden');
         }
-        
+
         function goBackToUSN() {
             document.getElementById('usnEntry').classList.remove('hidden');
             document.getElementById('usernameEntry').classList.add('hidden');
             document.getElementById('dashboard').classList.add('hidden');
             document.getElementById('semesterForm').classList.add('hidden');
         }
-        
+
         function registerNewUser() {
             const username = document.getElementById('username').value.trim();
             if (!username) {
                 alert('⚠️ Please enter your name');
                 return;
             }
-            
+
             // Create new user
             const allUsers = getAllUsers();
             allUsers[currentUSN] = {
@@ -716,36 +716,36 @@
                 createdAt: new Date().toISOString()
             };
             saveAllUsers(allUsers);
-            
+
             // Show dashboard
             showDashboard(allUsers[currentUSN]);
         }
-        
+
         function showDashboard(userData) {
             document.getElementById('usnEntry').classList.add('hidden');
             document.getElementById('usernameEntry').classList.add('hidden');
             document.getElementById('dashboard').classList.remove('hidden');
             document.getElementById('semesterForm').classList.add('hidden');
-            
+
             // Update welcome message
             document.getElementById('welcomeUser').textContent = userData.username || userData.usn;
             document.getElementById('displayUSN').textContent = userData.usn;
-            
+
             // Generate semester cards
             generateSemesterCards(userData);
-            
+
             // Generate CGPA card
             generateCGPACard(userData);
         }
-        
+
         function generateSemesterCards(userData) {
             const container = document.getElementById('semesterCards');
             container.innerHTML = '';
-            
+
             for (let sem = 1; sem <= 8; sem++) {
                 const card = document.createElement('div');
                 card.className = 'semester-card';
-                
+
                 const semData = userData.semesters[sem];
                 if (semData) {
                     card.classList.add('has-data');
@@ -759,52 +759,52 @@
                         <div class="sem-empty">No data</div>
                     `;
                 }
-                
-                card.onclick = function() { openSemester(sem); };
+
+                card.onclick = function () { openSemester(sem); };
                 container.appendChild(card);
             }
         }
-        
+
         function generateCGPACard(userData) {
             const container = document.getElementById('cgpaCardContainer');
             const semesters = userData.semesters;
             const semesterNumbers = Object.keys(semesters).map(Number).sort((a, b) => a - b);
-            
+
             if (semesterNumbers.length === 0) {
                 container.innerHTML = `
-                    <div class="cgpa-card" style="background: #2d3139; border-color: #61dafb;">
+                    <div class="cgpa-card" style="background: #f8f9fa; border-color: #007bff;">
                         <div class="cgpa-label">📊 Cumulative GPA</div>
-                        <div class="cgpa-value" style="font-size: 20px; color: #888;">No semester data yet</div>
-                        <div class="cgpa-percentage">Add your first semester to see CGPA</div>
+                        <div class="cgpa-value" style="font-size: 20px; color: #6c757d;">No semester data yet</div>
+                        <div class="cgpa-percentage" style="color: #333;">Add your first semester to see CGPA</div>
                     </div>
                 `;
                 return;
             }
-            
+
             // Calculate CGPA
             let totalCredits = 0;
             let totalCiGi = 0;
-            
+
             semesterNumbers.forEach(sem => {
                 const semData = semesters[sem];
                 totalCredits += semData.totalCredits || 0;
                 totalCiGi += semData.totalCiGi || 0;
             });
-            
+
             if (totalCredits === 0) {
                 container.innerHTML = `
-                    <div class="cgpa-card" style="background: #2d3139; border-color: #61dafb;">
+                    <div class="cgpa-card" style="background: #f8f9fa; border-color: #007bff;">
                         <div class="cgpa-label">📊 Cumulative GPA</div>
-                        <div class="cgpa-value" style="font-size: 20px; color: #888;">Invalid credit data</div>
+                        <div class="cgpa-value" style="font-size: 20px; color: #6c757d;">Invalid credit data</div>
                     </div>
                 `;
                 return;
             }
-            
+
             const cgpa = totalCiGi / totalCredits;
             // VTU official formula for CGPA to Percentage conversion: Percentage = (CGPA - 0.75) * 10
             const cgpaPercentage = (cgpa - 0.75) * 10;
-            
+
             container.innerHTML = `
                 <div class="cgpa-card">
                     <div class="cgpa-label">📊 Cumulative GPA (${semesterNumbers.length} semester${semesterNumbers.length > 1 ? 's' : ''})</div>
@@ -813,25 +813,25 @@
                 </div>
             `;
         }
-        
+
         function openSemester(semNum) {
             currentSemesterNum = semNum;
-            
+
             document.getElementById('usnEntry').classList.add('hidden');
             document.getElementById('usernameEntry').classList.add('hidden');
             document.getElementById('dashboard').classList.add('hidden');
             document.getElementById('semesterForm').classList.remove('hidden');
-            
+
             document.getElementById('currentSemester').textContent = semNum;
-            
+
             // Load existing semester data if available
             const userData = getUserData(currentUSN);
             const table = document.getElementById("gradeTable").getElementsByTagName('tbody')[0];
             table.innerHTML = '';
-            
+
             if (userData && userData.semesters[semNum]) {
                 const semData = userData.semesters[semNum];
-                
+
                 // Load saved subjects
                 semData.subjects.forEach((subject, index) => {
                     const row = table.insertRow(-1);
@@ -843,9 +843,9 @@
                         <td><button class="btn btn-remove" onclick="removeRow(this)">🗑️ Remove</button></td>
                     `;
                 });
-                
+
                 // Display SGPA for this semester
-                document.getElementById("result").innerHTML = 
+                document.getElementById("result").innerHTML =
                     'Saved SGPA for Semester ' + semNum + ': <span>' + semData.sgpa + '</span><br>' +
                     'Equivalent to: <span>' + semData.percentage + '%</span>';
                 document.getElementById("message").textContent = semData.message || '';
@@ -863,7 +863,7 @@
                 document.getElementById("result").innerHTML = '';
                 document.getElementById("message").textContent = '';
                 document.getElementById("printBtn").style.display = 'none';
-                
+
                 // Auto-focus on the first credits input after a short delay
                 // to allow the DOM to finish rendering the new row
                 setTimeout(() => {
@@ -874,7 +874,7 @@
                 }, 100);
             }
         }
-        
+
         function goBackToDashboard() {
             const userData = getUserData(currentUSN);
             if (userData) {
@@ -883,7 +883,7 @@
                 goBackToUSN();
             }
         }
-        
+
         function logout() {
             currentUSN = '';
             currentSemesterNum = null;
@@ -891,9 +891,9 @@
             document.getElementById('username').value = '';
             goBackToUSN();
         }
-        
+
         // ========== Table Functions ==========
-        
+
         function addRow(focusCredits = false) {
             var table = document.getElementById("gradeTable").getElementsByTagName('tbody')[0];
             var rowNum = table.rows.length + 1;
@@ -903,14 +903,14 @@
             var cell2 = row.insertCell(2);
             var cell3 = row.insertCell(3);
             var cell4 = row.insertCell(4);
-            
+
             cell0.className = 'row-number';
             cell0.innerHTML = rowNum;
             cell1.innerHTML = '<input type="number" placeholder="Credits" required onkeydown="handleEnterKey(event, this, \'credits\')">';
             cell2.innerHTML = '<input type="number" placeholder="Marks" required onkeydown="handleEnterKey(event, this, \'marks\')">';
             cell3.innerHTML = '<input type="number" placeholder="Grade Point" readonly>';
             cell4.innerHTML = '<button class="btn btn-remove" onclick="removeRow(this)">🗑️ Remove</button>';
-            
+
             // Focus on credits input if requested
             if (focusCredits) {
                 var creditsInput = cell1.querySelector('input');
@@ -918,16 +918,16 @@
                     creditsInput.focus();
                 }
             }
-            
+
             updateRowNumbers();
         }
-        
+
         function removeRow(btn) {
             var row = btn.parentNode.parentNode;
             row.remove();
             updateRowNumbers();
         }
-        
+
         function updateRowNumbers() {
             var table = document.getElementById("gradeTable").getElementsByTagName('tbody')[0];
             var rows = table.rows;
@@ -938,14 +938,14 @@
                 }
             }
         }
-        
+
         function handleEnterKey(event, inputElement, inputType) {
             if (event.key === 'Enter') {
                 event.preventDefault();
-                
+
                 var row = inputElement.parentNode.parentNode;
                 var table = document.getElementById("gradeTable").getElementsByTagName('tbody')[0];
-                
+
                 if (inputType === 'credits') {
                     // Move to marks input in the same row
                     var marksInput = row.cells[2].querySelector('input');
@@ -959,7 +959,7 @@
                         var gradePoint = getGradePoint(marks);
                         row.cells[3].querySelector('input').value = gradePoint;
                     }
-                    
+
                     // Check if this is the last row
                     var rowIndex = Array.from(table.rows).indexOf(row);
                     if (rowIndex === table.rows.length - 1) {
@@ -978,9 +978,9 @@
                 }
             }
         }
-        
+
         // Add focus and blur handlers for row highlighting
-        document.addEventListener('focusin', function(e) {
+        document.addEventListener('focusin', function (e) {
             if (e.target.tagName === 'INPUT' && e.target.closest('#gradeTable tbody')) {
                 var row = e.target.closest('tr');
                 if (row) {
@@ -988,8 +988,8 @@
                 }
             }
         });
-        
-        document.addEventListener('focusout', function(e) {
+
+        document.addEventListener('focusout', function (e) {
             if (e.target.tagName === 'INPUT' && e.target.closest('#gradeTable tbody')) {
                 var row = e.target.closest('tr');
                 if (row) {
@@ -997,28 +997,28 @@
                 }
             }
         });
-        
+
         // ========== SGPA Calculation Functions ==========
-        
+
         function calculateSGPA() {
             if (!currentUSN) {
                 alert('⚠️ Please enter your USN first');
                 return;
             }
-            
+
             if (!currentSemesterNum) {
                 alert('⚠️ Please select a semester');
                 return;
             }
-            
+
             var table = document.getElementById("gradeTable");
-            
+
             // Check if any subjects are entered before processing
             if (table.rows.length <= 1) {
                 alert('⚠️ Please add at least one subject');
                 return;
             }
-            
+
             var totalCi = 0;
             var totalCiGi = 0;
             var calculationDetails = "";
@@ -1027,29 +1027,29 @@
             for (var i = 1, row; row = table.rows[i]; i++) {
                 var credits = parseInt(row.cells[1].children[0].value);
                 var marks = parseInt(row.cells[2].children[0].value);
-                
+
                 if (isNaN(credits) || isNaN(marks)) {
                     alert('⚠️ Please fill in all credits and marks');
                     return;
                 }
-                
+
                 if (credits <= 0) {
                     alert('⚠️ Credits must be greater than zero');
                     return;
                 }
-                
+
                 if (marks < 0 || marks > 100) {
                     alert('⚠️ Marks must be between 0 and 100');
                     return;
                 }
-                
+
                 var gradePoint = getGradePoint(marks);
                 var ciGi = credits * gradePoint;
                 row.cells[3].children[0].value = gradePoint;
 
                 totalCi += credits;
                 totalCiGi += ciGi;
-                
+
                 // Store subject data
                 subjects.push({
                     subjectNumber: i,
@@ -1104,7 +1104,7 @@
                 message: selectedQuote,
                 timestamp: new Date().toISOString()
             };
-            
+
             saveUserSemesterData(currentUSN, semesterData);
 
             // Store in session storage for print page
@@ -1134,26 +1134,84 @@
         function printResult() {
             window.open('print.html');
         }
-        
+
         // ========== Data Storage Functions ==========
-        
+
+        let _memoryUsers = {};
+
+        async function connectToFile() {
+            try {
+                // Open file picker
+                [fileHandle] = await window.showOpenFilePicker({
+                    types: [{
+                        description: 'JSON Files',
+                        accept: { 'application/json': ['.json'] },
+                    }],
+                    multiple: false
+                });
+
+                // Read file
+                const file = await fileHandle.getFile();
+                const text = await file.text();
+
+                if (text.trim()) {
+                    try {
+                        _memoryUsers = JSON.parse(text);
+                        console.log('✅ Loaded data from file:', _memoryUsers);
+                    } catch (e) {
+                        console.error('Error parsing JSON:', e);
+                        alert('⚠️ Error parsing the file. Starting with empty data.');
+                        _memoryUsers = {};
+                    }
+                } else {
+                    _memoryUsers = {};
+                }
+
+                // Update UI
+                document.getElementById('connectionStatus').innerHTML = `
+                    <p style="color: #28a745; font-weight: bold;">✅ Connected to: ${file.name}</p>
+                    <p style="color: #6c757d; font-size: 12px;">Changes will be auto-saved.</p>
+                `;
+
+                // If user was already logged in, refresh
+                if (currentUSN) {
+                    const userData = getUserData(currentUSN);
+                    if (userData) {
+                        showDashboard(userData);
+                    } else {
+                        // If current user not found in new file, logout
+                        logout();
+                    }
+                } else {
+                    alert("✅ Connected! Please enter your USN to continue.");
+                }
+
+            } catch (err) {
+                console.error('File connection failed:', err);
+            }
+        }
+
         function getAllUsers() {
-            try {
-                return JSON.parse(localStorage.getItem('sgpaUsers') || '{}');
-            } catch (e) {
-                console.error('Error loading users:', e);
-                return {};
+            return _memoryUsers;
+        }
+
+        async function saveAllUsers(users) {
+            _memoryUsers = users;
+            console.log('✅ Data updated in memory.');
+
+            if (fileHandle) {
+                try {
+                    const writable = await fileHandle.createWritable();
+                    await writable.write(JSON.stringify(users, null, 2));
+                    await writable.close();
+                    console.log('💾 Auto-saved to local file!');
+                } catch (err) {
+                    console.error('❌ Failed to auto-save to file:', err);
+                    alert('⚠️ Auto-save failed. Use "Download Data" to save manually.');
+                }
             }
         }
-        
-        function saveAllUsers(users) {
-            try {
-                localStorage.setItem('sgpaUsers', JSON.stringify(users));
-            } catch (e) {
-                console.error('Error saving users:', e);
-            }
-        }
-        
+
         function getUserData(usn) {
             try {
                 const allUsers = getAllUsers();
@@ -1163,11 +1221,11 @@
                 return null;
             }
         }
-        
+
         function saveUserSemesterData(usn, semesterData) {
             try {
                 const allUsers = getAllUsers();
-                
+
                 if (!allUsers[usn]) {
                     allUsers[usn] = {
                         usn: usn,
@@ -1176,105 +1234,56 @@
                         createdAt: new Date().toISOString()
                     };
                 }
-                
+
                 allUsers[usn].semesters[semesterData.semester] = semesterData;
                 allUsers[usn].lastUpdated = new Date().toISOString();
-                
+
                 saveAllUsers(allUsers);
-                console.log('User data saved:', allUsers[usn]);
-                
+
+                console.log('User data saved (Session only):', allUsers[usn]);
+
                 return allUsers[usn];
             } catch (e) {
                 console.error('Error saving user data:', e);
                 return null;
             }
         }
-        
-        function loadFromLocalStorage() {
-            // This function ensures backward compatibility
-            // Data is automatically available from localStorage
-            const allUsers = getAllUsers();
-            const userCount = Object.keys(allUsers).length;
-            console.log(`App initialized. Loaded ${userCount} user(s) from localStorage.`);
-        }
-        
+
+
+
         // ========== JSON File Import/Export Functions ==========
-        
+
         function exportToJSON() {
             const allUsers = getAllUsers();
-            
+
             if (Object.keys(allUsers).length === 0) {
                 alert('⚠️ No data to export. Please add some semester data first.');
                 return;
             }
-            
+
             const dataStr = JSON.stringify(allUsers, null, 2);
             const blob = new Blob([dataStr], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
-            
+
             const a = document.createElement('a');
             a.href = url;
-            a.download = `sgpa_data_${new Date().toISOString().split('T')[0]}.json`;
+            a.download = `data.json`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
-            
-            alert('✅ Data exported successfully!');
+
+            alert('✅ Data exported to data.json!');
         }
-        
-        function importFromJSON(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const importedData = JSON.parse(e.target.result);
-                    
-                    // Validate the structure
-                    if (typeof importedData !== 'object') {
-                        throw new Error('Invalid data format');
-                    }
-                    
-                    // Merge with existing data
-                    const existingUsers = getAllUsers();
-                    const mergedUsers = { ...existingUsers, ...importedData };
-                    
-                    saveAllUsers(mergedUsers);
-                    
-                    alert('✅ Data imported successfully! ' + Object.keys(importedData).length + ' user(s) imported.');
-                    
-                    // Refresh if user is logged in
-                    if (currentUSN) {
-                        const userData = getUserData(currentUSN);
-                        if (userData) {
-                            showDashboard(userData);
-                        }
-                    }
-                } catch (error) {
-                    alert('❌ Error importing data: ' + error.message);
-                }
-            };
-            reader.readAsText(file);
-            
-            // Reset file input
-            event.target.value = '';
-        }
-        
+
         // ========== About SGPA Section Toggle ==========
-        
-        function toggleAboutSection() {
-            const content = document.getElementById('accordionContent');
-            const icon = document.getElementById('accordionIcon');
-            
-            content.classList.toggle('open');
-            icon.classList.toggle('rotated');
-        }
+
+
     </script>
 
     <footer>
-        <p>&copy; 2024 SGPA Quest. All Rights Reserved. 🎓</p>
+        <p>&copy; 2026 SGPA Calculator.</p>
     </footer>
 </body>
+
 </html>

@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SGPA Quest - Detailed Report</title>
+    <title>SGPA Calculator - Detailed Report</title>
     <style>
         /* Base styles for light theme */
         body {
@@ -13,6 +14,7 @@
             background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
             color: #333;
         }
+
         .container {
             max-width: 850px;
             margin: 0 auto;
@@ -21,6 +23,7 @@
             border-radius: 15px;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
         }
+
         h2 {
             text-align: center;
             color: #2c3e50;
@@ -29,45 +32,58 @@
             text-transform: uppercase;
             letter-spacing: 1px;
         }
+
         .calculation {
             margin-top: 20px;
             font-size: 16px;
             line-height: 1.8;
             color: #333;
         }
-        .result, .message {
+
+        .result,
+        .message {
             margin-top: 20px;
             text-align: center;
             font-size: 22px;
             font-weight: bold;
             color: #2c3e50;
         }
+
         .message {
             margin-top: 10px;
             font-size: 20px;
             color: #f39c12;
         }
+
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
         }
-        table, th, td {
+
+        table,
+        th,
+        td {
             border: 1px solid #ddd;
         }
-        th, td {
+
+        th,
+        td {
             padding: 15px;
             text-align: center;
         }
+
         th {
             background-color: #f0f4f8;
             color: #2c3e50;
             font-weight: bold;
         }
+
         td {
             background-color: #fafafa;
             color: #333;
         }
+
         .summary {
             margin-top: 20px;
             font-size: 18px;
@@ -76,6 +92,7 @@
             border-radius: 10px;
             color: #2c3e50;
         }
+
         .user-info-display {
             background-color: #f0f4f8;
             padding: 15px;
@@ -83,16 +100,19 @@
             margin-bottom: 20px;
             text-align: left;
         }
+
         .user-info-display p {
             margin: 8px 0;
             font-size: 16px;
         }
+
         .user-info-display strong {
             color: #2c3e50;
             min-width: 100px;
             display: inline-block;
         }
-        .btn, .theme-toggle {
+
+        .btn {
             display: inline-block;
             margin: 20px auto;
             padding: 12px 30px;
@@ -105,65 +125,32 @@
             cursor: pointer;
             transition: background-color 0.3s ease, transform 0.3s ease;
         }
-        .btn:hover, .theme-toggle:hover {
+
+        .btn:hover {
             background-color: #1a252f;
             transform: scale(1.05);
         }
 
-        /* Dark theme styles */
-        body.dark-theme {
-            background: linear-gradient(135deg, #1f1c2c 0%, #928dab 100%);
-            color: #ffffff;
-        }
-        .dark-theme .container {
-            background: rgba(0, 0, 0, 0.8);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(10px);
-        }
-        .dark-theme h2 {
-            color: #00d4ff;
-        }
-        .dark-theme .calculation {
-            color: #ffffff;
-        }
-        .dark-theme .result, .dark-theme .message {
-            color: #00d4ff;
-        }
-        .dark-theme .message {
-            color: #f39c12;
-        }
-        .dark-theme th {
-            background-color: rgba(255, 255, 255, 0.1);
-            color: #00d4ff;
-        }
-        .dark-theme td {
-            background-color: rgba(255, 255, 255, 0.05);
-            color: #ffffff;
-        }
-        .dark-theme .summary {
-            background-color: rgba(0, 212, 255, 0.2);
-            color: #ffffff;
-        }
-        .dark-theme .user-info-display {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-        .dark-theme .user-info-display strong {
-            color: #00d4ff;
-        }
+
 
         /* Print styles */
         @media print {
-            .btn, .theme-toggle {
+
+            .btn {
                 display: none;
             }
-            body, .container {
+
+            body,
+            .container {
                 background: #ffffff !important;
                 color: #000000 !important;
             }
+
             th {
                 background-color: #f0f0f0 !important;
                 color: #333 !important;
             }
+
             td {
                 background-color: #ffffff !important;
                 color: #000 !important;
@@ -171,9 +158,10 @@
         }
     </style>
 </head>
+
 <body onload="displayResult()">
     <div class="container">
-        <h2>SGPA Quest: Detailed Report</h2>
+        <h2>SGPA Calculator: Detailed Report</h2>
 
         <!-- User Info Display -->
         <div class="user-info-display">
@@ -181,7 +169,7 @@
             <p><strong>Semester:</strong> <span id="displaySemester"></span></p>
         </div>
 
-        <button class="theme-toggle" onclick="toggleTheme()">Switch to Dark Theme</button>
+
 
         <div class="calculation" id="calculationDetails">
             <!-- Calculation details will be loaded here -->
@@ -206,11 +194,11 @@
             // Load user info
             let usn = sessionStorage.getItem('usn');
             let semester = sessionStorage.getItem('semester');
-            
+
             // Display user info
             document.getElementById("displayUSN").textContent = usn || 'N/A';
             document.getElementById("displaySemester").textContent = semester || 'N/A';
-            
+
             // Load calculation details
             let calculationDetails = sessionStorage.getItem('calculationDetails');
             let totalCredits = sessionStorage.getItem('totalCredits');
@@ -247,18 +235,8 @@
             document.getElementById("finalMessage").textContent = message;
         }
 
-        function toggleTheme() {
-            // Toggle between light and dark theme
-            document.body.classList.toggle('dark-theme');
 
-            // Update the button text based on the current theme
-            const themeToggleButton = document.querySelector('.theme-toggle');
-            if (document.body.classList.contains('dark-theme')) {
-                themeToggleButton.textContent = "Switch to Light Theme";
-            } else {
-                themeToggleButton.textContent = "Switch to Dark Theme";
-            }
-        }
     </script>
 </body>
+
 </html>
